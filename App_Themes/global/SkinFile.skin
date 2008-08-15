@@ -1,0 +1,25 @@
+<asp:GridView runat="server" GridLines="None" AlternatingRowStyle-BackColor="#f6f7f8" HeaderStyle-BackColor="#d6d7d8" />
+<asp:GridView runat="server" SkinId="gridEventsBox" GridLines="None" AlternatingRowStyle-BackColor="#f6f7f8" HeaderStyle-BackColor="#d6d7d8" />
+<asp:GridView runat="server" SkinId="gridNewsFeedBox" GridLines="None" AlternatingRowStyle-BackColor="#f6f7f8" HeaderStyle-BackColor="#d6d7d8" />
+<asp:GridView runat="server" SkinID="gridProducts" GridLines="None" />
+
+<asp:TreeView runat="server" ShowExpandCollapse="true"/>
+
+<asp:Image runat="server" SkinID="imgFile" />
+
+<asp:Login runat="server" SkinID="lgnLogin" />
+
+<asp:Button runat="server" CssClass="button" />
+<asp:Button runat="server" SkinID="btnSubscribe" />
+<asp:Button runat="server" SkinID="btnSearch" /> 
+
+
+<asp:Calendar runat="server" BorderWidth=0
+    TodayDayStyle-Font-Bold="True" 
+    TodayDayStyle-Font-Italic="true" 
+    SelectorStyle-BackColor="#E3E5EA" 
+    SelectedDayStyle-BackColor="dimgray" 
+    SelectedDayStyle-ForeColor="whiteSmoke"
+    TitleStyle-BackColor="#E3E5EA">
+</asp:Calendar>
+
