@@ -1,0 +1,200 @@
+﻿<%@ Master Language="VB" Inherits="BaseMaster" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="default.css" rel="stylesheet" />
+</head>
+<body style="margin:20px;">
+
+    <frm:Form id="Form1" runat="server">
+    
+    <table align="center" cellpadding="0" cellspacing="0">
+    <tr>
+        <td><img src="templates/fresh_007/images/c_top_left.gif" /></td>
+        <td style="background-image:url(templates/fresh_007/images/c_top_center.gif)"></td>
+        <td><img src="templates/fresh_007/images/c_top_right.gif" /></td>
+    </tr>
+    <tr>
+        <td style="background-image:url(templates/fresh_007/images/c_middle_left.gif)"></td>
+        <td style="background:#fafafa">
+        
+            <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+            <td valign="top" colspan=2 style="padding-bottom:3px">
+                
+                <table style="width:100%" cellpadding="0" cellspacing="0">
+                <tr>
+                <td>
+                       <div style="padding:15px;font-size:22px;line-height:45px;font-family:Arial,sans-serif;color:#555555;">your logo here...</div> 
+                </td>
+                <td style="text-align:right">
+                        <asp:ContentPlaceHolder ID="placeholderSearch" runat="server">
+                        </asp:ContentPlaceHolder>  
+                </td>
+                </tr>
+                <tr>
+                <td valign="bottom" style="padding:15px;padding-bottom:3px;padding-top:3px">
+                        <asp:ContentPlaceHolder ID="placeholderTopMenu" runat="server">
+                        </asp:ContentPlaceHolder>&nbsp;   
+                        <asp:ContentPlaceHolder ID="placeholderCartInfo" runat="server">
+                        </asp:ContentPlaceHolder>  
+
+                </td>
+                <td style="text-align:right" valign="bottom" style="padding-bottom:3px;padding-top:3px">
+                    <asp:ContentPlaceHolder ID="placeholderRegister" runat="server"></asp:ContentPlaceHolder> 
+                    <asp:ContentPlaceHolder ID="placeholderWelcome" runat="server"></asp:ContentPlaceHolder> 
+                    <asp:ContentPlaceHolder ID="placeholderAdminWorkspaceLink" runat="server"></asp:ContentPlaceHolder> 
+                    <asp:ContentPlaceHolder ID="placeholderLoginLogout" runat="server"></asp:ContentPlaceHolder>
+
+                </td>
+                </tr>
+                </table>
+                <hr />
+            <asp:ContentPlaceHolder ID="placeholderMainMenu_DropDown" Visible=false runat="server">
+            </asp:ContentPlaceHolder>
+            
+            </td>
+            </tr>
+            <tr>
+            <td valign="top" style="padding-left:10px">
+	                <asp:ContentPlaceHolder ID="placeholderMainMenu_VerticalMenu" runat="server" visible="true"></asp:ContentPlaceHolder>
+                    <asp:ContentPlaceHolder ID="placeholderLeftTop" runat="server" visible="true"></asp:ContentPlaceHolder>    
+                    <asp:ContentPlaceHolder ID="placeholderLeft" runat="server" visible="true"></asp:ContentPlaceHolder>     
+                    <asp:ContentPlaceHolder ID="placeholderLeftBottom" runat="server" visible="true"></asp:ContentPlaceHolder>      
+            </td>
+            <td valign="top" style="padding-top:0px;">
+                
+                <div style="width:100%;height:131px;background:url('templates/fresh_007/images/header_grass.jpg')">                
+                </div>
+                
+	            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+	            <tr>
+	            <td valign="top" style="width:600px;padding:15px;padding-bottom:0px" width="100%">	         
+                
+                    <asp:ContentPlaceHolder ID="placeholderBreadcrumb" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:contentplaceholder ID="placeholderTitle" runat="server">
+                    </asp:contentplaceholder>
+                      
+                    <asp:ContentPlaceHolder ID="placeholderPublishingInfo" runat="server">
+                    </asp:ContentPlaceHolder>   
+            	        
+                    <asp:ContentPlaceHolder ID="placeholderPageInfo" runat="server">
+                    </asp:ContentPlaceHolder>
+                
+                    <asp:ContentPlaceHolder ID="placeholderBodyTop" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderBody" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderFileView" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderFileDownload" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderListing" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderCategoryInfo" runat="server">
+                    </asp:ContentPlaceHolder>   
+                    
+                    <asp:ContentPlaceHolder ID="placeholderAuthoring" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderContentRating" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderComments" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderBodyBottom" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <br />
+                    
+	            </td>
+	            <td valign="top" style="padding:0px;padding-top:40px">
+        	    
+                    <br />
+
+                    <asp:ContentPlaceHolder ID="placeholderRightTop" runat="server">
+                    </asp:ContentPlaceHolder>
+                
+                    <asp:ContentPlaceHolder ID="placeholderPagesWithin" Visible="false" runat="server">
+                    </asp:ContentPlaceHolder>   
+                    
+                    <asp:ContentPlaceHolder ID="placeholderOrderNow" runat="server">
+                    </asp:ContentPlaceHolder>               
+                                
+                    <asp:ContentPlaceHolder ID="placeholderRight" runat="server">
+                    </asp:ContentPlaceHolder>         
+                                
+                    <asp:ContentPlaceHolder ID="placeholderArchives" runat="server">
+                    </asp:ContentPlaceHolder>   
+                    
+                    <asp:ContentPlaceHolder ID="placeholderCategoryList" runat="server">
+                    </asp:ContentPlaceHolder>   
+                    
+                    <asp:ContentPlaceHolder ID="placeholderSubscribe" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderSameLevelPages" Visible="false" runat="server">
+                    </asp:ContentPlaceHolder>
+                    
+                    <asp:ContentPlaceHolder ID="placeholderRightBottom" runat="server">
+                    </asp:ContentPlaceHolder> 
+                    
+	            </td>
+	            </tr>
+	            </table>	
+            	
+            </td>
+            </tr>
+            <tr>
+            <td colspan=2>
+            
+                <hr />
+
+                <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                <td style="padding-left:10px">
+                    <asp:ContentPlaceHolder ID="placeholderBottomMenu" runat="server">
+                    </asp:ContentPlaceHolder>	
+                </td>
+                <td align="right">
+                    <asp:ContentPlaceHolder ID="placeholderPrint" runat="server">
+                    </asp:ContentPlaceHolder>	
+                </td>
+                </tr>
+                </table>
+
+            </td>
+            </tr>
+            <tr>
+            <td colspan=2 style="padding:10px;font-size:9px;">
+                @ 2007, YourCompanyName, All Right Reserved.
+            </td>
+            </tr>
+            </table>  
+                  
+        </td>
+        <td style="background-image:url(templates/fresh_007/images/c_middle_right.gif)"></td>
+    </tr>
+    <tr>
+        <td><img src="templates/fresh_007/images/c_bottom_left.gif" /></td>
+        <td style="background-image:url(templates/fresh_007/images/c_bottom_center.gif)"></td>
+        <td><img src="templates/fresh_007/images/c_bottom_right.gif" /></td>
+    </tr>
+    </table>
+    
+<asp:ContentPlaceHolder ID="placeholderScript" runat="server"></asp:ContentPlaceHolder>
+
+
+    </frm:Form>
+    
+</body>
+</html>
