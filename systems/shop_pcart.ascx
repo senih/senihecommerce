@@ -2,12 +2,14 @@
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Data.sqlClient " %>
 <%@ Import Namespace="System.Web.Security.Membership"%>
+<%@ Import Namespace="System.Web.Security" %>
 <%@ Import Namespace="System.Net.Mail " %>
 <%@ Import Namespace="Registration" %>
 <%@ Import Namespace="GCheckout.Checkout" %>
 <%@ Import Namespace="GCheckout.Util" %>
 <%@ Import Namespace="GCheckout" %>
 <%@ Import Namespace="Orders.Orders" %>
+<%@ Import Namespace="System.Xml" %>
 
 <%@ Register assembly="GCheckout" namespace="GCheckout.Checkout" tagprefix="cc1" %>
 
@@ -38,10 +40,9 @@
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs)
         GetConfigShop()
         
-        'Da ne mora da bide logiran za da kupuva
-        'If Not Me.IsUserLoggedIn Then
-        '    Session("shipping") = Nothing
-        'End If
+        If Not Me.IsUserLoggedIn Then
+            Session("shipping") = Nothing
+        End If
         
         If IsNothing(Session("shipping")) Then
             CreateShipping()
@@ -55,13 +56,13 @@
             dtCart = Session("Cart")
             
             'If there is tangible product, then use shipping
-            Dim drCart As DataRow
-            For Each drCart In dtCart.Rows
-                If Convert.ToBoolean(drCart("tangible")) Then
-                    bUseShipping = True
-                    Exit For
-                End If
-            Next
+            'Dim drCart As DataRow
+            'For Each drCart In dtCart.Rows
+            '    If Convert.ToBoolean(drCart("tangible")) Then
+            '        bUseShipping = True
+            '        Exit For
+            '    End If
+            'Next
         End If
         
         If Not Page.IsPostBack Then
@@ -110,27 +111,25 @@
     End Sub
     
     Protected Sub Wizard1_NextButtonClick(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.WizardNavigationEventArgs)
-        Response.Redirect(HttpContext.Current.Items("_page") & "?s=ship")
         
-        'Da ne mora da bide logiran za da kupuva
-        'If Me.IsUserLoggedIn Then
-        '    Response.Redirect(HttpContext.Current.Items("_page") & "?s=ship")
-        'Else
-        '    'LOGIN
-        '    panelLogin.Visible = True
-        '    Login1.PasswordRecoveryUrl = "~/password.aspx?ReturnUrl=" & Request.RawUrl.Split("?")(0)
+        If Me.IsUserLoggedIn Then
+            Response.Redirect(HttpContext.Current.Items("_page") & "?s=ship")
+        Else
+            'LOGIN
+            panelLogin.Visible = True
+            Login1.PasswordRecoveryUrl = "~/password.aspx?ReturnUrl=" & Request.RawUrl.Split("?")(0)
 
-        '    If bUseShipping Then
-        '        'CREATE ACCOUNT (STANDARD)
-        '        panelCreateUser.Visible = False
-        '        panelRegister.Visible = True
-        '        linkRegister.NavigateUrl = "~/" & Me.LinkRegistration & "?returnurl=" & Me.AppPath & HttpContext.Current.Items("_page")
-        '    Else
-        '        'CREATE ACCOUNT (QUICK)
-        '        panelCreateUser.Visible = True
-        '        panelRegister.Visible = False
-        '    End If
-        'End If
+            If bUseShipping Then
+                'CREATE ACCOUNT (STANDARD)
+                panelCreateUser.Visible = False
+                panelRegister.Visible = True
+                linkRegister.NavigateUrl = "~/" & Me.LinkRegistration & "?returnurl=" & Me.AppPath & HttpContext.Current.Items("_page")
+            Else
+                'CREATE ACCOUNT (QUICK)
+                panelCreateUser.Visible = True
+                panelRegister.Visible = False
+            End If
+        End If
     End Sub
     
     '*** CREATE ACCOUNT (QUICK) ***
@@ -243,7 +242,6 @@
     '*** DATABASE ***
     Protected Function SaveOrder() As Integer
         Dim nOrderId As Integer
-
         Dim sSQL As String
         Dim oConn As SqlConnection
         Dim oCommand As SqlCommand
@@ -850,21 +848,29 @@
         
     'Googele Checkout API request
     Protected Sub GCheckoutButton1_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs)
-        Dim Req As CheckoutShoppingCartRequest = GCheckoutButton1.CreateRequest()
-        Dim drCart As DataRow
-        dtCart = Session("Cart")
-        Dim nShipping As Decimal = GetShipping()
-        For Each drCart In dtCart.Rows
-            Dim description As String = GetItemDescription(drCart("item_id"))
-            Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"))
-        Next
-        If nShipping <> 0 Then
-            Req.AddFlatRateShippingMethod("Makedonski posti", nShipping)
+        If Me.IsUserLoggedIn Then
+            Dim Req As CheckoutShoppingCartRequest = GCheckoutButton1.CreateRequest()
+            Dim drCart As DataRow
+            dtCart = Session("Cart")
+            Dim nShipping As Decimal = GetShipping()
+            For Each drCart In dtCart.Rows
+                Dim description As String = GetItemDescription(drCart("item_id"))
+                Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), Me.UserName)
+            Next
+            If nShipping <> 0 Then
+                Req.AddFlatRateShippingMethod("Makedonski posti", nShipping)
+            End If
+            Req.ContinueShoppingUrl = "http://localhost/teststore/products.aspx"
+            Req.EditCartUrl = "http://localhost/teststore/shop_pcart.aspx"
+            Dim Resp As GCheckoutResponse = Req.Send()
+            If Req.Send.IsGood Then
+                Response.Redirect(Resp.RedirectUrl, True)
+            End If
+        Else
+            Session("Cart") = Nothing
+            Response.Redirect("~/default.aspx")
         End If
-        Req.ContinueShoppingUrl = "http://localhost/teststore/products.aspx"
-        Req.EditCartUrl = "http://localhost/teststore/shop_pcart.aspx"
-        Dim Resp As GCheckoutResponse = Req.Send()
-        Response.Redirect(Resp.RedirectUrl, True)
+
     End Sub
     
     
@@ -1384,7 +1390,7 @@
                 <td colspan="3">
                 <asp:Label ID="lblTerms" meta:resourcekey="lblTerms" Font-Bold="true" runat="server" Text="Terms & Conditions"></asp:Label>
                 <br />
-                <asp:Panel ID="Panel1"  BorderWidth="1" BorderColor="#cccccc" BorderStyle=solid runat="server" ScrollBars="Vertical" Height="70px" Width="100%">
+                <asp:Panel ID="Panel1"  BorderWidth="1" BorderColor="#cccccc" BorderStyle="Solid" runat="server" ScrollBars="Vertical" Height="70px" Width="100%">
                     <div style="padding:5px"><asp:Literal ID="litTerms" runat="server"></asp:Literal></div>
                 </asp:Panel>
                 <div style="text-align:right">

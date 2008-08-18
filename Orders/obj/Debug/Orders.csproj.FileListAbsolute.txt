@@ -4,3 +4,4 @@ D:\Webs\TestStore\Orders\obj\Debug\ResolveAssemblyReference.cache
 D:\Webs\TestStore\Orders\obj\Debug\Orders.dll
 D:\Webs\TestStore\Orders\obj\Debug\Orders.pdb
 D:\Webs\TestStore\Orders\bin\Debug\Orders.dll.config
+D:\Webs\TestStore\Orders\bin\Debug\GCheckout.dll
