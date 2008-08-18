@@ -2144,6 +2144,8 @@ namespace Orders
 		
 		private string _download_status;
 		
+		private System.Nullable<long> _google_order_number;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -2194,6 +2196,8 @@ namespace Orders
     partial void Ontracking_idChanged();
     partial void Ondownload_statusChanging(string value);
     partial void Ondownload_statusChanged();
+    partial void Ongoogle_order_numberChanging(System.Nullable<long> value);
+    partial void Ongoogle_order_numberChanged();
     #endregion
 		
 		public order()
@@ -2657,6 +2661,26 @@ namespace Orders
 					this._download_status = value;
 					this.SendPropertyChanged("download_status");
 					this.Ondownload_statusChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_google_order_number", DbType="BigInt")]
+		public System.Nullable<long> google_order_number
+		{
+			get
+			{
+				return this._google_order_number;
+			}
+			set
+			{
+				if ((this._google_order_number != value))
+				{
+					this.Ongoogle_order_numberChanging(value);
+					this.SendPropertyChanging();
+					this._google_order_number = value;
+					this.SendPropertyChanged("google_order_number");
+					this.Ongoogle_order_numberChanged();
 				}
 			}
 		}

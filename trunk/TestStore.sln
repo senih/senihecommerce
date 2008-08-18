@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TestStore", "..\..\..\Webs\TestStore\", "{BD484C12-D587-4170-A639-131C3AB365D6}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TestStore", ".", "{BD484C12-D587-4170-A639-131C3AB365D6}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFramework = "3.5"
 		Debug.AspNetCompiler.VirtualPath = "/TestStore"
@@ -18,10 +18,10 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TestStore", "..\..\..\Webs\
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "3027"
+		VWDPort = "2335"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders", "..\..\..\Webs\TestStore\Orders\Orders.csproj", "{C630F3D4-CA39-4E9F-B145-3CFE8A844196}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders", "Orders\Orders.csproj", "{C630F3D4-CA39-4E9F-B145-3CFE8A844196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
