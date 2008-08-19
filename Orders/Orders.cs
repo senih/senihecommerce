@@ -30,6 +30,11 @@ namespace Orders
             return description[0].ToString();
         }
 
+        /// <summary>
+        /// Processes the notification.
+        /// </summary>
+        /// <param name="xmlFile">The XML file.</param>
+        /// <returns>Serial number of the notification</returns>
         public static string ProcessNotification(string xmlFile)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
@@ -42,46 +47,87 @@ namespace Orders
             {
                 case "new-order-notification":
                     NewOrderNotification N1 = (NewOrderNotification)EncodeHelper.Deserialize(requestedXml, typeof(NewOrderNotification));
+                    ///This notification tells us that Google has accepted the order
                     SerialNumber = N1.serialnumber;
                     Int64 OrderNumber1 = Int64.Parse(N1.googleordernumber);
-                    string ShipToName = N1.buyershippingaddress.contactname;
-                    string ShipToAddress1 = N1.buyershippingaddress.address1;
-                    string ShipToAddress2 = N1.buyershippingaddress.address2;
-                    string ShipToCity = N1.buyershippingaddress.city;
-                    string ShipToState = N1.buyershippingaddress.region;
-                    string ShipToZip = N1.buyershippingaddress.postalcode;
+                    int pos = N1.buyershippingaddress.contactname.IndexOf(" ");
+                    string ShipToFirstName = N1.buyershippingaddress.contactname.Substring(0, pos);
+                    string ShipToLatsName = N1.buyershippingaddress.contactname.Substring(pos + 1);
+                    string UserName = N1.shoppingcart.merchantprivatedata.Any[0].InnerText;
 
                     order newOrder = new order();
                     newOrder.google_order_number = OrderNumber1;
                     newOrder.order_date = N1.timestamp;
-                    newOrder.order_by = "test";
+                    newOrder.order_by = UserName;
                     newOrder.sub_total = 0;
                     newOrder.total = N1.ordertotal.Value;
                     newOrder.status = "Order placed";
                     newOrder.root_id = 1;
+                    newOrder.shipping_first_name = ShipToFirstName;
+                    newOrder.shipping_last_name = ShipToLatsName;
+                    newOrder.shipping_address = N1.buyershippingaddress.address1;
+                    newOrder.shipping_city = N1.buyershippingaddress.city;
+                    newOrder.shipping_state = N1.buyershippingaddress.region;
+                    newOrder.shipping_zip = N1.buyershippingaddress.postalcode;
+                    newOrder.shipping_country = N1.buyerbillingaddress.countrycode;
 
                     db.orders.InsertOnSubmit(newOrder);
                     db.SubmitChanges();
 
-                    var d = from o in db.orders where o.google_order_number == OrderNumber1 select o.order_id;
+                    List<int> list = (from o in db.orders where o.google_order_number == OrderNumber1 select o.order_id).ToList();
+                    int orderId = list[0];                    
 
                     foreach (Item ThisItem in N1.shoppingcart.items)
                     {
-                        string Name = ThisItem.itemname;
-                        int Quantity = ThisItem.quantity;
-                        decimal Price = ThisItem.unitprice.Value;
+                        int itemId = int.Parse(ThisItem.merchantprivateitemdata.Any[0].InnerText);
+                        string desc = ThisItem.itemdescription;
+                        int quantity = ThisItem.quantity;
+                        decimal price = ThisItem.unitprice.Value;
+                        bool tangible = false;
+                        if (ThisItem.digitalcontent != null)
+                            tangible = true;
+                        
+                        order_item newItem = new order_item();
+                        newItem.item_id = itemId;
+                        newItem.order_id = orderId;
+                        newItem.price = price;
+                        newItem.qty = quantity;
+                        newItem.tangible = tangible;
+                        newItem.item_desc = desc;
+
+                        db.order_items.InsertOnSubmit(newItem);
+                        db.SubmitChanges();
+
                     }
 
                     break;
                 case "risk-information-notification":
                     RiskInformationNotification N2 = (RiskInformationNotification)EncodeHelper.Deserialize(requestedXml, typeof(RiskInformationNotification));
-                    // This notification tells us that Google has authorized the order and it has passed the fraud check.
-                    // Use the data below to determine if you want to accept the order, then start processing it.
+                    // This notification tells us that Google has authorized the order and it has passed the fraud check
                     SerialNumber = N2.serialnumber;
-                    string OrderNumber2 = N2.googleordernumber;
-                    string AVS = N2.riskinformation.avsresponse;
-                    string CVN = N2.riskinformation.cvnresponse;
-                    bool SellerProtection = N2.riskinformation.eligibleforprotection;
+                    string contactName = EncodeHelper.GetElementValue(requestedXml, "contact-name");
+                    string email = EncodeHelper.GetElementValue(requestedXml, "email");
+                    string city = EncodeHelper.GetElementValue(requestedXml, "city");
+                    int zip = int.Parse(EncodeHelper.GetElementValue(requestedXml, "postal-code"));
+                    string country = EncodeHelper.GetElementValue(requestedXml, "country-code");
+
+                    customer newCustomer = new customer();
+                    newCustomer.google_order_number = Int64.Parse(N2.googleordernumber);
+                    newCustomer.eligibility = N2.riskinformation.eligibleforprotection;
+                    newCustomer.contact_name = contactName;
+                    newCustomer.email = email;
+                    newCustomer.address = N2.riskinformation.billingaddress.address1;
+                    newCustomer.city = contactName;
+                    newCustomer.zip = zip;
+                    newCustomer.country = country;
+                    newCustomer.avs = char.Parse(N2.riskinformation.avsresponse);
+                    newCustomer.cvn = char.Parse(N2.riskinformation.cvnresponse);
+                    newCustomer.cc_number = int.Parse(N2.riskinformation.partialccnumber);
+                    newCustomer.ip = N2.riskinformation.ipaddress;
+
+                    db.customers.InsertOnSubmit(newCustomer);
+                    db.SubmitChanges();
+
                     break;
                 case "order-state-change-notification":
                     OrderStateChangeNotification N3 = (OrderStateChangeNotification)EncodeHelper.Deserialize(requestedXml, typeof(OrderStateChangeNotification));
