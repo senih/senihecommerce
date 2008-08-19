@@ -854,12 +854,19 @@
             dtCart = Session("Cart")
             Dim nShipping As Decimal = GetShipping()
             For Each drCart In dtCart.Rows
+                Dim xmlDoc1 As XmlDocument = New XmlDocument()
+                Dim xmlNode1 As XmlNode = xmlDoc1.CreateElement("item-id")
+                xmlNode1.InnerText = drCart("item_id")
                 Dim description As String = GetItemDescription(drCart("item_id"))
-                Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), Me.UserName)
+                Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), xmlNode1)
             Next
             If nShipping <> 0 Then
                 Req.AddFlatRateShippingMethod("Makedonski posti", nShipping)
             End If
+            Dim xmlDoc2 As XmlDocument = New XmlDocument
+            Dim xmlNode2 As XmlNode = xmlDoc2.CreateElement("user-name")
+            xmlNode2.InnerText = Me.UserName
+            Req.AddMerchantPrivateDataNode(xmlNode2)
             Req.ContinueShoppingUrl = "http://localhost/teststore/products.aspx"
             Req.EditCartUrl = "http://localhost/teststore/shop_pcart.aspx"
             Dim Resp As GCheckoutResponse = Req.Send()
