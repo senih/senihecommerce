@@ -23,9 +23,7 @@ namespace Orders
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
 
-            var d = from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary;
-
-            List<string> description = d.ToList();
+            List<string> description = (from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary).ToList();
 
             return description[0].ToString();
         }
@@ -105,28 +103,42 @@ namespace Orders
                     RiskInformationNotification N2 = (RiskInformationNotification)EncodeHelper.Deserialize(requestedXml, typeof(RiskInformationNotification));
                     // This notification tells us that Google has authorized the order and it has passed the fraud check
                     SerialNumber = N2.serialnumber;
+                    long googleOrderNumber = Int64.Parse(N2.googleordernumber);
                     string contactName = EncodeHelper.GetElementValue(requestedXml, "contact-name");
                     string email = EncodeHelper.GetElementValue(requestedXml, "email");
                     string city = EncodeHelper.GetElementValue(requestedXml, "city");
                     int zip = int.Parse(EncodeHelper.GetElementValue(requestedXml, "postal-code"));
                     string country = EncodeHelper.GetElementValue(requestedXml, "country-code");
+                    bool elibible = N2.riskinformation.eligibleforprotection;
+                    char cvn = char.Parse(N2.riskinformation.cvnresponse);
 
-                    customer newCustomer = new customer();
-                    newCustomer.google_order_number = Int64.Parse(N2.googleordernumber);
-                    newCustomer.eligibility = N2.riskinformation.eligibleforprotection;
-                    newCustomer.contact_name = contactName;
-                    newCustomer.email = email;
-                    newCustomer.address = N2.riskinformation.billingaddress.address1;
-                    newCustomer.city = contactName;
-                    newCustomer.zip = zip;
-                    newCustomer.country = country;
-                    newCustomer.avs = char.Parse(N2.riskinformation.avsresponse);
-                    newCustomer.cvn = char.Parse(N2.riskinformation.cvnresponse);
-                    newCustomer.cc_number = int.Parse(N2.riskinformation.partialccnumber);
-                    newCustomer.ip = N2.riskinformation.ipaddress;
+                    if (elibible && N2.riskinformation.cvnresponse == "M")
+                    {
+                        customer newCustomer = new customer();
+                        newCustomer.google_order_number = googleOrderNumber;
+                        newCustomer.eligibility = elibible;
+                        newCustomer.contact_name = contactName;
+                        newCustomer.email = email;
+                        newCustomer.address = N2.riskinformation.billingaddress.address1;
+                        newCustomer.city = contactName;
+                        newCustomer.zip = zip;
+                        newCustomer.country = country;
+                        newCustomer.avs = char.Parse(N2.riskinformation.avsresponse);
+                        newCustomer.cvn = cvn;
+                        newCustomer.cc_number = int.Parse(N2.riskinformation.partialccnumber);
+                        newCustomer.ip = N2.riskinformation.ipaddress;
 
-                    db.customers.InsertOnSubmit(newCustomer);
-                    db.SubmitChanges();
+                        db.customers.InsertOnSubmit(newCustomer);
+                        db.SubmitChanges();
+                    }
+                    else
+                    {
+                        string reason = "You did not pass Google security check!";
+                        string comment = "Please visis http://checkout.google.com/support/sell/bin/topic.py?topic=15055 for more information";
+                        GCheckout.OrderProcessing.CancelOrderRequest cancelReq = new GCheckout.OrderProcessing.CancelOrderRequest(N2.googleordernumber, reason, comment);
+                        cancelReq.Send();
+                        // List<order> canceledOrder = (from or in db.orders where or.google_order_number == googleOrderNumber select or).ToList();
+                    }
 
                     break;
                 case "order-state-change-notification":
