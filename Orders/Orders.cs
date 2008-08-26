@@ -13,7 +13,7 @@ namespace Orders
 {
     public static class Orders
     {
-
+        
         /// <summary>
         /// Gets the item description.
         /// </summary>
@@ -99,6 +99,7 @@ namespace Orders
                     }
 
                     break;
+
                 case "risk-information-notification":
                     RiskInformationNotification N2 = (RiskInformationNotification)EncodeHelper.Deserialize(requestedXml, typeof(RiskInformationNotification));
                     // This notification tells us that Google has authorized the order and it has passed the fraud check
@@ -137,47 +138,87 @@ namespace Orders
                         string comment = "Please visis http://checkout.google.com/support/sell/bin/topic.py?topic=15055 for more information";
                         GCheckout.OrderProcessing.CancelOrderRequest cancelReq = new GCheckout.OrderProcessing.CancelOrderRequest(N2.googleordernumber, reason, comment);
                         cancelReq.Send();
-                        // List<order> canceledOrder = (from or in db.orders where or.google_order_number == googleOrderNumber select or).ToList();
                     }
 
                     break;
-                case "order-state-change-notification":
+
+                case "order-state-change-notification":                    
                     OrderStateChangeNotification N3 = (OrderStateChangeNotification)EncodeHelper.Deserialize(requestedXml, typeof(OrderStateChangeNotification));
                     // The order has changed either financial or fulfillment state in Google's system.
                     SerialNumber = N3.serialnumber;
-                    string OrderNumber3 = N3.googleordernumber;
-                    string NewFinanceState = N3.newfinancialorderstate.ToString();
-                    string NewFulfillmentState = N3.newfulfillmentorderstate.ToString();
-                    string PrevFinanceState = N3.previousfinancialorderstate.ToString();
-                    string PrevFulfillmentState = N3.previousfulfillmentorderstate.ToString();
+                    long googleOrderNumber1 = Int64.Parse(N3.googleordernumber);
+                    string newFinanceState = N3.newfinancialorderstate.ToString();
+                    string newFulfillmentState = N3.newfulfillmentorderstate.ToString();
+                    string prevFinanceState = N3.previousfinancialorderstate.ToString();
+                    string prevFulfillmentState = N3.previousfulfillmentorderstate.ToString();
+                    
+                    order thisOrder1 = (from or in db.orders where or.google_order_number == googleOrderNumber1 select or).Single<order>();
+                    if (newFinanceState == "CHARGEABLE")
+                    {
+                        GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(N3.googleordernumber);
+                        chargeReq.Send();
+                    }
+                    if (N3.reason != string.Empty)
+                        newFinanceState += ". Reason: " + N3.reason;
+                    thisOrder1.status = newFinanceState;
+                    thisOrder1.shipping_status = newFulfillmentState;
+                    db.SubmitChanges();
                     break;
+
                 case "charge-amount-notification":
                     ChargeAmountNotification N4 = (ChargeAmountNotification)EncodeHelper.Deserialize(requestedXml, typeof(ChargeAmountNotification));
                     // Google has successfully charged the customer's credit card.
                     SerialNumber = N4.serialnumber;
-                    string OrderNumber4 = N4.googleordernumber;
-                    decimal ChargedAmount = N4.latestchargeamount.Value;
+                    long googleOrderNumber2 = Int64.Parse(N4.googleordernumber);
+                    decimal chargedAmount = N4.latestchargeamount.Value;
+
+                    order thisOrder2 = (from or in db.orders where or.google_order_number == googleOrderNumber2 select or).Single<order>();
+                    thisOrder2.charged_amount = chargedAmount;
+                    db.SubmitChanges();
+
                     break;
+
                 case "refund-amount-notification":
                     RefundAmountNotification N5 = (RefundAmountNotification)EncodeHelper.Deserialize(requestedXml, typeof(RefundAmountNotification));
                     // Google has successfully refunded the customer's credit card.
                     SerialNumber = N5.serialnumber;
-                    string OrderNumber5 = N5.googleordernumber;
-                    decimal RefundedAmount = N5.latestrefundamount.Value;
+                    long googleOrderNumber3 = Int64.Parse(N5.googleordernumber);
+                    decimal refundedAmount = N5.latestrefundamount.Value;
+
+                    order thisOrder3 = (from or in db.orders where or.google_order_number == googleOrderNumber3 select or).Single<order>();
+                    thisOrder3.status = "REFUNDED";
+                    thisOrder3.total = refundedAmount;
+                    db.SubmitChanges();
+
                     break;
+
                 case "chargeback-amount-notification":
                     ChargebackAmountNotification N6 = (ChargebackAmountNotification)EncodeHelper.Deserialize(requestedXml, typeof(ChargebackAmountNotification));
                     // A customer initiated a chargeback with his credit card company to get her money back.
                     SerialNumber = N6.serialnumber;
-                    string OrderNumber6 = N6.googleordernumber;
-                    decimal ChargebackAmount = N6.latestchargebackamount.Value;
+                    long googleOrderNumber4 = Int64.Parse(N6.googleordernumber);
+                    decimal chargebackAmount = N6.latestchargebackamount.Value;
+
+                    order thisOrder4 = (from or in db.orders where or.google_order_number == googleOrderNumber4 select or).Single<order>();
+                    thisOrder4.status = "CHARGEBACK";
+                    db.SubmitChanges();
+
                     break;
+
                 default:
                     break;
+
             }
             strReader.Close();
             strReader.Dispose();
             return SerialNumber;
+        }
+
+        public static List<order> GetAllOrders()
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            List<order> listOfAllOrderes = (from or in db.orders select or).ToList<order>();
+            return listOfAllOrderes;
         }
     }
 

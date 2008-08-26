@@ -89,6 +89,23 @@
       <Column Name="tangible" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
     </Type>
   </Table>
+  <Table Name="dbo.customers" Member="customers">
+    <Type Name="customer">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="google_order_number" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="eligibility" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="contact_name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="email" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="address" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="city" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="zip" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="country" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="avs" Type="System.Char" DbType="Char(1) NOT NULL" CanBeNull="false" />
+      <Column Name="cvn" Type="System.Char" DbType="Char(1) NOT NULL" CanBeNull="false" />
+      <Column Name="cc_number" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ip" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
   <Table Name="dbo.orders" Member="orders">
     <Type Name="order">
       <Column Name="order_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -114,24 +131,8 @@
       <Column Name="shipped_date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="tracking_id" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="download_status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="google_order_number" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.customers" Member="customers">
-    <Type Name="customer">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="google_order_number" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
-      <Column Name="eligibility" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Column Name="contact_name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="email" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="address" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
-      <Column Name="city" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="zip" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="country" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="avs" Type="System.Char" DbType="Char(1) NOT NULL" CanBeNull="false" />
-      <Column Name="cvn" Type="System.Char" DbType="Char(1) NOT NULL" CanBeNull="false" />
-      <Column Name="cc_number" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="ip" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="charged_amount" Type="System.Decimal" DbType="Money" CanBeNull="true" />
     </Type>
   </Table>
 </Database>

@@ -36,12 +36,12 @@ namespace Orders
     partial void Insertorder_item(order_item instance);
     partial void Updateorder_item(order_item instance);
     partial void Deleteorder_item(order_item instance);
-    partial void Insertorder(order instance);
-    partial void Updateorder(order instance);
-    partial void Deleteorder(order instance);
     partial void Insertcustomer(customer instance);
     partial void Updatecustomer(customer instance);
     partial void Deletecustomer(customer instance);
+    partial void Insertorder(order instance);
+    partial void Updateorder(order instance);
+    partial void Deleteorder(order instance);
     #endregion
 		
 		public StoreDataClassesDataContext() : 
@@ -90,19 +90,19 @@ namespace Orders
 			}
 		}
 		
-		public System.Data.Linq.Table<order> orders
-		{
-			get
-			{
-				return this.GetTable<order>();
-			}
-		}
-		
 		public System.Data.Linq.Table<customer> customers
 		{
 			get
 			{
 				return this.GetTable<customer>();
+			}
+		}
+		
+		public System.Data.Linq.Table<order> orders
+		{
+			get
+			{
+				return this.GetTable<order>();
 			}
 		}
 	}
@@ -2103,6 +2103,356 @@ namespace Orders
 		}
 	}
 	
+	[Table(Name="dbo.customers")]
+	public partial class customer : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ID;
+		
+		private long _google_order_number;
+		
+		private bool _eligibility;
+		
+		private string _contact_name;
+		
+		private string _email;
+		
+		private string _address;
+		
+		private string _city;
+		
+		private int _zip;
+		
+		private string _country;
+		
+		private char _avs;
+		
+		private char _cvn;
+		
+		private int _cc_number;
+		
+		private string _ip;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIDChanging(int value);
+    partial void OnIDChanged();
+    partial void Ongoogle_order_numberChanging(long value);
+    partial void Ongoogle_order_numberChanged();
+    partial void OneligibilityChanging(bool value);
+    partial void OneligibilityChanged();
+    partial void Oncontact_nameChanging(string value);
+    partial void Oncontact_nameChanged();
+    partial void OnemailChanging(string value);
+    partial void OnemailChanged();
+    partial void OnaddressChanging(string value);
+    partial void OnaddressChanged();
+    partial void OncityChanging(string value);
+    partial void OncityChanged();
+    partial void OnzipChanging(int value);
+    partial void OnzipChanged();
+    partial void OncountryChanging(string value);
+    partial void OncountryChanged();
+    partial void OnavsChanging(char value);
+    partial void OnavsChanged();
+    partial void OncvnChanging(char value);
+    partial void OncvnChanged();
+    partial void Oncc_numberChanging(int value);
+    partial void Oncc_numberChanged();
+    partial void OnipChanging(string value);
+    partial void OnipChanged();
+    #endregion
+		
+		public customer()
+		{
+			OnCreated();
+		}
+		
+		[Column(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ID
+		{
+			get
+			{
+				return this._ID;
+			}
+			set
+			{
+				if ((this._ID != value))
+				{
+					this.OnIDChanging(value);
+					this.SendPropertyChanging();
+					this._ID = value;
+					this.SendPropertyChanged("ID");
+					this.OnIDChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_google_order_number", DbType="BigInt NOT NULL")]
+		public long google_order_number
+		{
+			get
+			{
+				return this._google_order_number;
+			}
+			set
+			{
+				if ((this._google_order_number != value))
+				{
+					this.Ongoogle_order_numberChanging(value);
+					this.SendPropertyChanging();
+					this._google_order_number = value;
+					this.SendPropertyChanged("google_order_number");
+					this.Ongoogle_order_numberChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_eligibility", DbType="Bit NOT NULL")]
+		public bool eligibility
+		{
+			get
+			{
+				return this._eligibility;
+			}
+			set
+			{
+				if ((this._eligibility != value))
+				{
+					this.OneligibilityChanging(value);
+					this.SendPropertyChanging();
+					this._eligibility = value;
+					this.SendPropertyChanged("eligibility");
+					this.OneligibilityChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_contact_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string contact_name
+		{
+			get
+			{
+				return this._contact_name;
+			}
+			set
+			{
+				if ((this._contact_name != value))
+				{
+					this.Oncontact_nameChanging(value);
+					this.SendPropertyChanging();
+					this._contact_name = value;
+					this.SendPropertyChanged("contact_name");
+					this.Oncontact_nameChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_email", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		public string email
+		{
+			get
+			{
+				return this._email;
+			}
+			set
+			{
+				if ((this._email != value))
+				{
+					this.OnemailChanging(value);
+					this.SendPropertyChanging();
+					this._email = value;
+					this.SendPropertyChanged("email");
+					this.OnemailChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_address", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string address
+		{
+			get
+			{
+				return this._address;
+			}
+			set
+			{
+				if ((this._address != value))
+				{
+					this.OnaddressChanging(value);
+					this.SendPropertyChanging();
+					this._address = value;
+					this.SendPropertyChanged("address");
+					this.OnaddressChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_city", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string city
+		{
+			get
+			{
+				return this._city;
+			}
+			set
+			{
+				if ((this._city != value))
+				{
+					this.OncityChanging(value);
+					this.SendPropertyChanging();
+					this._city = value;
+					this.SendPropertyChanged("city");
+					this.OncityChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_zip", DbType="Int NOT NULL")]
+		public int zip
+		{
+			get
+			{
+				return this._zip;
+			}
+			set
+			{
+				if ((this._zip != value))
+				{
+					this.OnzipChanging(value);
+					this.SendPropertyChanging();
+					this._zip = value;
+					this.SendPropertyChanged("zip");
+					this.OnzipChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_country", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		public string country
+		{
+			get
+			{
+				return this._country;
+			}
+			set
+			{
+				if ((this._country != value))
+				{
+					this.OncountryChanging(value);
+					this.SendPropertyChanging();
+					this._country = value;
+					this.SendPropertyChanged("country");
+					this.OncountryChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_avs", DbType="Char(1) NOT NULL")]
+		public char avs
+		{
+			get
+			{
+				return this._avs;
+			}
+			set
+			{
+				if ((this._avs != value))
+				{
+					this.OnavsChanging(value);
+					this.SendPropertyChanging();
+					this._avs = value;
+					this.SendPropertyChanged("avs");
+					this.OnavsChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_cvn", DbType="Char(1) NOT NULL")]
+		public char cvn
+		{
+			get
+			{
+				return this._cvn;
+			}
+			set
+			{
+				if ((this._cvn != value))
+				{
+					this.OncvnChanging(value);
+					this.SendPropertyChanging();
+					this._cvn = value;
+					this.SendPropertyChanged("cvn");
+					this.OncvnChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_cc_number", DbType="Int NOT NULL")]
+		public int cc_number
+		{
+			get
+			{
+				return this._cc_number;
+			}
+			set
+			{
+				if ((this._cc_number != value))
+				{
+					this.Oncc_numberChanging(value);
+					this.SendPropertyChanging();
+					this._cc_number = value;
+					this.SendPropertyChanged("cc_number");
+					this.Oncc_numberChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_ip", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		public string ip
+		{
+			get
+			{
+				return this._ip;
+			}
+			set
+			{
+				if ((this._ip != value))
+				{
+					this.OnipChanging(value);
+					this.SendPropertyChanging();
+					this._ip = value;
+					this.SendPropertyChanged("ip");
+					this.OnipChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
 	[Table(Name="dbo.orders")]
 	public partial class order : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -2155,7 +2505,9 @@ namespace Orders
 		
 		private string _download_status;
 		
-		private System.Nullable<long> _google_order_number;
+		private long _google_order_number;
+		
+		private System.Nullable<decimal> _charged_amount;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -2207,8 +2559,10 @@ namespace Orders
     partial void Ontracking_idChanged();
     partial void Ondownload_statusChanging(string value);
     partial void Ondownload_statusChanged();
-    partial void Ongoogle_order_numberChanging(System.Nullable<long> value);
+    partial void Ongoogle_order_numberChanging(long value);
     partial void Ongoogle_order_numberChanged();
+    partial void Oncharged_amountChanging(System.Nullable<decimal> value);
+    partial void Oncharged_amountChanged();
     #endregion
 		
 		public order()
@@ -2676,136 +3030,6 @@ namespace Orders
 			}
 		}
 		
-		[Column(Storage="_google_order_number", DbType="BigInt")]
-		public System.Nullable<long> google_order_number
-		{
-			get
-			{
-				return this._google_order_number;
-			}
-			set
-			{
-				if ((this._google_order_number != value))
-				{
-					this.Ongoogle_order_numberChanging(value);
-					this.SendPropertyChanging();
-					this._google_order_number = value;
-					this.SendPropertyChanged("google_order_number");
-					this.Ongoogle_order_numberChanged();
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
-	[Table(Name="dbo.customers")]
-	public partial class customer : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _ID;
-		
-		private long _google_order_number;
-		
-		private bool _eligibility;
-		
-		private string _contact_name;
-		
-		private string _email;
-		
-		private string _address;
-		
-		private string _city;
-		
-		private int _zip;
-		
-		private string _country;
-		
-		private char _avs;
-		
-		private char _cvn;
-		
-		private int _cc_number;
-		
-		private string _ip;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIDChanging(int value);
-    partial void OnIDChanged();
-    partial void Ongoogle_order_numberChanging(long value);
-    partial void Ongoogle_order_numberChanged();
-    partial void OneligibilityChanging(bool value);
-    partial void OneligibilityChanged();
-    partial void Oncontact_nameChanging(string value);
-    partial void Oncontact_nameChanged();
-    partial void OnemailChanging(string value);
-    partial void OnemailChanged();
-    partial void OnaddressChanging(string value);
-    partial void OnaddressChanged();
-    partial void OncityChanging(string value);
-    partial void OncityChanged();
-    partial void OnzipChanging(int value);
-    partial void OnzipChanged();
-    partial void OncountryChanging(string value);
-    partial void OncountryChanged();
-    partial void OnavsChanging(char value);
-    partial void OnavsChanged();
-    partial void OncvnChanging(char value);
-    partial void OncvnChanged();
-    partial void Oncc_numberChanging(int value);
-    partial void Oncc_numberChanged();
-    partial void OnipChanging(string value);
-    partial void OnipChanged();
-    #endregion
-		
-		public customer()
-		{
-			OnCreated();
-		}
-		
-		[Column(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ID
-		{
-			get
-			{
-				return this._ID;
-			}
-			set
-			{
-				if ((this._ID != value))
-				{
-					this.OnIDChanging(value);
-					this.SendPropertyChanging();
-					this._ID = value;
-					this.SendPropertyChanged("ID");
-					this.OnIDChanged();
-				}
-			}
-		}
-		
 		[Column(Storage="_google_order_number", DbType="BigInt NOT NULL")]
 		public long google_order_number
 		{
@@ -2826,222 +3050,22 @@ namespace Orders
 			}
 		}
 		
-		[Column(Storage="_eligibility", DbType="Bit NOT NULL")]
-		public bool eligibility
+		[Column(Storage="_charged_amount", DbType="Money")]
+		public System.Nullable<decimal> charged_amount
 		{
 			get
 			{
-				return this._eligibility;
+				return this._charged_amount;
 			}
 			set
 			{
-				if ((this._eligibility != value))
+				if ((this._charged_amount != value))
 				{
-					this.OneligibilityChanging(value);
+					this.Oncharged_amountChanging(value);
 					this.SendPropertyChanging();
-					this._eligibility = value;
-					this.SendPropertyChanged("eligibility");
-					this.OneligibilityChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_contact_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string contact_name
-		{
-			get
-			{
-				return this._contact_name;
-			}
-			set
-			{
-				if ((this._contact_name != value))
-				{
-					this.Oncontact_nameChanging(value);
-					this.SendPropertyChanging();
-					this._contact_name = value;
-					this.SendPropertyChanged("contact_name");
-					this.Oncontact_nameChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_email", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string email
-		{
-			get
-			{
-				return this._email;
-			}
-			set
-			{
-				if ((this._email != value))
-				{
-					this.OnemailChanging(value);
-					this.SendPropertyChanging();
-					this._email = value;
-					this.SendPropertyChanged("email");
-					this.OnemailChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_address", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
-		public string address
-		{
-			get
-			{
-				return this._address;
-			}
-			set
-			{
-				if ((this._address != value))
-				{
-					this.OnaddressChanging(value);
-					this.SendPropertyChanging();
-					this._address = value;
-					this.SendPropertyChanged("address");
-					this.OnaddressChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_city", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string city
-		{
-			get
-			{
-				return this._city;
-			}
-			set
-			{
-				if ((this._city != value))
-				{
-					this.OncityChanging(value);
-					this.SendPropertyChanging();
-					this._city = value;
-					this.SendPropertyChanged("city");
-					this.OncityChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_zip", DbType="Int NOT NULL")]
-		public int zip
-		{
-			get
-			{
-				return this._zip;
-			}
-			set
-			{
-				if ((this._zip != value))
-				{
-					this.OnzipChanging(value);
-					this.SendPropertyChanging();
-					this._zip = value;
-					this.SendPropertyChanged("zip");
-					this.OnzipChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_country", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string country
-		{
-			get
-			{
-				return this._country;
-			}
-			set
-			{
-				if ((this._country != value))
-				{
-					this.OncountryChanging(value);
-					this.SendPropertyChanging();
-					this._country = value;
-					this.SendPropertyChanged("country");
-					this.OncountryChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_avs", DbType="Char(1) NOT NULL")]
-		public char avs
-		{
-			get
-			{
-				return this._avs;
-			}
-			set
-			{
-				if ((this._avs != value))
-				{
-					this.OnavsChanging(value);
-					this.SendPropertyChanging();
-					this._avs = value;
-					this.SendPropertyChanged("avs");
-					this.OnavsChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_cvn", DbType="Char(1) NOT NULL")]
-		public char cvn
-		{
-			get
-			{
-				return this._cvn;
-			}
-			set
-			{
-				if ((this._cvn != value))
-				{
-					this.OncvnChanging(value);
-					this.SendPropertyChanging();
-					this._cvn = value;
-					this.SendPropertyChanged("cvn");
-					this.OncvnChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_cc_number", DbType="Int NOT NULL")]
-		public int cc_number
-		{
-			get
-			{
-				return this._cc_number;
-			}
-			set
-			{
-				if ((this._cc_number != value))
-				{
-					this.Oncc_numberChanging(value);
-					this.SendPropertyChanging();
-					this._cc_number = value;
-					this.SendPropertyChanged("cc_number");
-					this.Oncc_numberChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_ip", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string ip
-		{
-			get
-			{
-				return this._ip;
-			}
-			set
-			{
-				if ((this._ip != value))
-				{
-					this.OnipChanging(value);
-					this.SendPropertyChanging();
-					this._ip = value;
-					this.SendPropertyChanged("ip");
-					this.OnipChanged();
+					this._charged_amount = value;
+					this.SendPropertyChanged("charged_amount");
+					this.Oncharged_amountChanged();
 				}
 			}
 		}
