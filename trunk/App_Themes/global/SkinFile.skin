@@ -3,6 +3,16 @@
 <asp:GridView runat="server" SkinId="gridNewsFeedBox" GridLines="None" AlternatingRowStyle-BackColor="#f6f7f8" HeaderStyle-BackColor="#d6d7d8" />
 <asp:GridView runat="server" SkinID="gridProducts" GridLines="None" />
 
+<asp:GridView runat="server" SkinID="gridOrders" BackColor="White" 
+    BorderColor="#999999" BorderStyle="Solid" BorderWidth="1px" CellPadding="3" 
+    ForeColor="Black" GridLines="Vertical">
+    <FooterStyle BackColor="#CCCCCC" />
+    <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
+    <SelectedRowStyle BackColor="#C0C0C0" ForeColor="White" />
+    <HeaderStyle BackColor="Black" Font-Bold="True" ForeColor="White" />
+    <AlternatingRowStyle BackColor="#CCCCCC" />
+</asp:GridView>
+
 <asp:TreeView runat="server" ShowExpandCollapse="true"/>
 
 <asp:Image runat="server" SkinID="imgFile" />

@@ -37,10 +37,10 @@ namespace Orders
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
             string SerialNumber = "";
-            ///Read XML file
+            //Read XML file
             StreamReader strReader = new StreamReader(xmlFile);
             string requestedXml = strReader.ReadToEnd();
-            ///Act on XML file
+            //Act on XML file
             switch (EncodeHelper.GetTopElement(requestedXml))
             {
                 case "new-order-notification":
@@ -158,8 +158,6 @@ namespace Orders
                         GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(N3.googleordernumber);
                         chargeReq.Send();
                     }
-                    if (N3.reason != string.Empty)
-                        newFinanceState += ". Reason: " + N3.reason;
                     thisOrder1.status = newFinanceState;
                     thisOrder1.shipping_status = newFulfillmentState;
                     db.SubmitChanges();
@@ -214,11 +212,46 @@ namespace Orders
             return SerialNumber;
         }
 
+        /// <summary>
+        /// Gets all orders.
+        /// </summary>
+        /// <returns>List of all orders</returns>
         public static List<order> GetAllOrders()
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
             List<order> listOfAllOrderes = (from or in db.orders select or).ToList<order>();
             return listOfAllOrderes;
+        }
+
+
+        /// <summary>
+        /// Gets the orders.
+        /// </summary>
+        /// <param name="payment">The payment.</param>
+        /// <param name="shipment">The shipment.</param>
+        /// <param name="orderNumber">The order number.</param>
+        /// <param name="fromDate">From date.</param>
+        /// <param name="toDate">To date.</param>
+        /// <returns>List of search results</returns>
+        public static List<order> GetOrders(string payment, string shipment, long orderNumber, DateTime fromDate, DateTime toDate)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            List<order> listOfOrders;
+            if (orderNumber != 0)
+            {
+                listOfOrders = (from or in db.orders
+                                where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (or.google_order_number == orderNumber) && (or.order_date >= fromDate && or.order_date <= toDate)
+                                orderby or.order_date descending
+                                select or).ToList<order>();
+            }
+            else
+            {
+                listOfOrders = (from or in db.orders
+                                where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (or.order_date >= fromDate && or.order_date <= toDate)
+                                orderby or.order_date descending
+                                select or).ToList<order>();
+            }
+            return listOfOrders;
         }
     }
 

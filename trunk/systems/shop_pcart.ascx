@@ -8,7 +8,7 @@
 <%@ Import Namespace="GCheckout.Checkout" %>
 <%@ Import Namespace="GCheckout.Util" %>
 <%@ Import Namespace="GCheckout" %>
-<%@ Import Namespace="Orders.Orders" %>
+<%@ Import Namespace="Orders" %>
 <%@ Import Namespace="System.Xml" %>
 
 <%@ Register assembly="GCheckout" namespace="GCheckout.Checkout" tagprefix="cc1" %>
@@ -857,7 +857,7 @@
                 Dim xmlDoc1 As XmlDocument = New XmlDocument()
                 Dim xmlNode1 As XmlNode = xmlDoc1.CreateElement("item-id")
                 xmlNode1.InnerText = drCart("item_id")
-                Dim description As String = GetItemDescription(drCart("item_id"))
+                Dim description As String = Orders.Orders.GetItemDescription(drCart("item_id"))
                 Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), xmlNode1)
             Next
             If nShipping <> 0 Then
