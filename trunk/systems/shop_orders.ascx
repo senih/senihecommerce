@@ -1,5 +1,7 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="shop_orders.ascx.cs" Inherits="systems_shop_orders" %>
 
+<%@ Register assembly="EclipseWebSolutions.DatePicker" namespace="EclipseWebSolutions.DatePicker" tagprefix="cc1" %>
+
 <asp:LoginView ID="LoginView" runat="server">
     <RoleGroups>
         <asp:RoleGroup Roles="Administrators">
@@ -45,10 +47,10 @@
                                     </asp:DropDownList>
                                 </td>
                                 <td>
-                                    <asp:TextBox ID="FromDateTextBox" runat="server"></asp:TextBox>
+                                    <cc1:DatePicker ID="FromDatePicker" runat="server" />
                                 </td>
                                 <td>
-                                    <asp:TextBox ID="ToDateTextBox" runat="server"></asp:TextBox>
+                                    <cc1:DatePicker ID="ToDatePicker" runat="server" />
                                 </td>
                             </tr>
                             <tr>
@@ -79,7 +81,10 @@
                     </div>
                     <br /><hr /><br />
                     <div>
-                        <asp:GridView ID="OrdersGridView" runat="server" SkinID="gridOrders" AutoGenerateColumns="False" AllowSorting="true" AllowPaging="true">
+                        <asp:GridView ID="OrdersGridView" runat="server" SkinID="gridOrders" 
+                            AutoGenerateColumns="False" AllowSorting="true" AllowPaging="true" 
+                            onselectedindexchanged="OrdersGridView_SelectedIndexChanged" 
+                            DataKeyNames="google_order_number">
                             <Columns>
                                 <asp:BoundField DataField="order_id" HeaderText="ID" />
                                 <asp:BoundField DataField="google_order_number" HeaderText="Google #" />
@@ -92,6 +97,24 @@
                             </Columns>
                         </asp:GridView>
                         <asp:Label ID="StatusLabel" runat="server"></asp:Label>
+                    </div>
+                    <div>
+                        <asp:Panel ID="OrderDetailsPanel" runat="server">
+                            <asp:DetailsView ID="BillingDetails" runat="server">
+                            </asp:DetailsView>
+                            <asp:DetailsView ID="ShippingDetails" AutoGenerateRows="false" runat="server">
+                                <Fields>
+                                    <asp:BoundField DataField="shipping_first_name" HeaderText="First name:" />
+                                    <asp:BoundField DataField="shipping_last_name" HeaderText="Last name:" />
+                                    <asp:BoundField DataField="shipping_company" HeaderText="Company" />
+                                    <asp:BoundField DataField="shipping_address" HeaderText="Address:" />
+                                    <asp:BoundField DataField="shipping_city" HeaderText="City:" />
+                                    <asp:BoundField DataField="shipping_zip" HeaderText="ZIP:" />
+                                    <asp:BoundField DataField="shipping_country" HeaderText="Country:" />
+                                    <asp:BoundField DataField="shipping_phone" HeaderText="Phone:" />
+                                </Fields>
+                            </asp:DetailsView>
+                        </asp:Panel>
                     </div>
                 </div>
             </ContentTemplate>

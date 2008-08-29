@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
@@ -9,19 +10,20 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
 using System.Collections.Generic;
 using Orders;
+using EclipseWebSolutions.DatePicker;
 
 public partial class systems_shop_orders : BaseUserControl
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack)
+        if (!IsPostBack && Page.User.Identity.IsAuthenticated)
         {
             GridView ordersGrid = (GridView)LoginView.FindControl("OrdersGridView");
             ordersGrid.DataSource = Orders.Orders.GetAllOrders();
             ordersGrid.DataBind();
+            
         }
 
     }
@@ -36,15 +38,19 @@ public partial class systems_shop_orders : BaseUserControl
         DropDownList paymentDDL = (DropDownList)LoginView.FindControl("PaymentDropDownList");
         DropDownList shipmentDDL = (DropDownList)LoginView.FindControl("ShipmentDropDownList");
         TextBox orderNumberTB = (TextBox)LoginView.FindControl("OrderNumberTextBox");
-        TextBox fromDateTB = (TextBox)LoginView.FindControl("FromDateTextBox");
-        TextBox toDateTB = (TextBox)LoginView.FindControl("ToDateTextBox");
+        DatePicker fromDP = (DatePicker)LoginView.FindControl("FromDatePicker");
+        DatePicker toDP = (DatePicker)LoginView.FindControl("ToDatePicker");
         GridView orderGrid = (GridView)LoginView.FindControl("OrdersGridView");
         Label statusLbl = (Label)LoginView.FindControl("StatusLabel");
+        Panel orderDetailsPanel = (Panel)LoginView.FindControl("OrderDetailsPanel");
+        orderDetailsPanel.Visible = false;
         string shipment;
         string payment;
-        DateTime from = DateTime.Parse("1/1/1753");
-        DateTime to = DateTime.MaxValue;
-        long googleOrderNumber = 0;
+        DateTime minDateTime = (DateTime)SqlDateTime.MinValue;
+        DateTime maxDateTime = (DateTime)SqlDateTime.MaxValue;
+        DateTime fromDate = minDateTime;
+        DateTime toDate = maxDateTime;
+        long googleOrderNumber =0;
         if (paymentDDL.SelectedValue == "ALL_PAY")
             payment = "";
         else
@@ -57,12 +63,16 @@ public partial class systems_shop_orders : BaseUserControl
         {
             googleOrderNumber = Int64.Parse(orderNumberTB.Text);
         }
-        if ((fromDateTB.Text != string.Empty) && (toDateTB.Text != string.Empty))
+
+        DateTime.TryParse(fromDP.txtDate.Text, out fromDate);
+        DateTime.TryParse(toDP.txtDate.Text, out toDate);
+        if (fromDate < minDateTime || fromDate > maxDateTime || toDate < minDateTime || toDate > maxDateTime)
         {
-            from = DateTime.Parse(fromDateTB.Text);
-            to = DateTime.Parse(toDateTB.Text);
+            fromDate = minDateTime;
+            toDate = maxDateTime;
         }
-        List<order> gridDataSource = Orders.Orders.GetOrders(payment, shipment, googleOrderNumber, from, to);
+
+        List<order> gridDataSource = Orders.Orders.GetOrders(payment, shipment, googleOrderNumber, fromDate, toDate);
         if (gridDataSource.Count == 0)
         {
             orderGrid.Visible = false;
@@ -75,5 +85,20 @@ public partial class systems_shop_orders : BaseUserControl
             orderGrid.DataSource = gridDataSource;
             orderGrid.DataBind();
         }
+    }
+    protected void OrdersGridView_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        GridView ordersGrid = (GridView)LoginView.FindControl("OrdersGridView");
+        DetailsView billingDetails = (DetailsView)LoginView.FindControl("BillingDetails");
+        DetailsView shippingDetails = (DetailsView)LoginView.FindControl("ShippingDetails");
+        Panel orderDetailsPanel = (Panel)LoginView.FindControl("OrderDetailsPanel");
+        orderDetailsPanel.Visible = true;
+        ordersGrid.Visible = false;
+        long dataKey = (long)ordersGrid.SelectedDataKey.Value;
+        List<order> source = Orders.Orders.GetOrderDetails(dataKey);
+        List<order_item> items = Orders.Orders.GetItems(source[0].order_id);
+
+        shippingDetails.DataSource = source;
+        shippingDetails.DataBind();
     }
 }

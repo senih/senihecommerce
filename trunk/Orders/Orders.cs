@@ -237,21 +237,42 @@ namespace Orders
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
             List<order> listOfOrders;
-            if (orderNumber != 0)
-            {
-                listOfOrders = (from or in db.orders
-                                where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (or.google_order_number == orderNumber) && (or.order_date >= fromDate && or.order_date <= toDate)
-                                orderby or.order_date descending
-                                select or).ToList<order>();
-            }
-            else
-            {
-                listOfOrders = (from or in db.orders
-                                where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (or.order_date >= fromDate && or.order_date <= toDate)
-                                orderby or.order_date descending
-                                select or).ToList<order>();
-            }
+
+
+            listOfOrders = (from or in db.orders
+                            where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (orderNumber==0 || or.google_order_number == orderNumber) && (or.order_date >= fromDate && or.order_date <= toDate)
+                            orderby or.order_date descending
+                            select or).ToList<order>();
+
             return listOfOrders;
+        }
+
+        /// <summary>
+        /// Gets the order details.
+        /// </summary>
+        /// <param name="googleOrderNumber">The google order number.</param>
+        /// <returns>List of details</returns>
+        public static List<order> GetOrderDetails(long googleOrderNumber)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            List<order> orderDetails = (from or in db.orders
+                                       where or.google_order_number == googleOrderNumber
+                                       select or).ToList<order>();
+            return orderDetails;
+        }
+
+        /// <summary>
+        /// Gets the items.
+        /// </summary>
+        /// <param name="orderId">The order id.</param>
+        /// <returns>Items form order with given orderID</returns>
+        public static List<order_item> GetItems(int orderId)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            List<order_item> itemsDetails = (from i in db.order_items
+                                             where i.order_id == orderId
+                                             select i).ToList<order_item>();
+            return itemsDetails;
         }
     }
 
