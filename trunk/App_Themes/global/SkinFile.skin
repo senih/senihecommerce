@@ -8,10 +8,15 @@
     ForeColor="Black" GridLines="Vertical">
     <FooterStyle BackColor="#CCCCCC" />
     <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
-    <SelectedRowStyle BackColor="#C0C0C0" ForeColor="White" />
+    <SelectedRowStyle ForeColor="White" />
     <HeaderStyle BackColor="Black" Font-Bold="True" ForeColor="White" />
     <AlternatingRowStyle BackColor="#CCCCCC" />
 </asp:GridView>
+
+<asp:DetailsView runat="server" SkinID="detailsOrder" GridLines="None">
+    <RowStyle Font-Bold="True" />
+    <FieldHeaderStyle HorizontalAlign="Right" Font-Bold="false" />
+</asp:DetailsView>
 
 <asp:TreeView runat="server" ShowExpandCollapse="true"/>
 

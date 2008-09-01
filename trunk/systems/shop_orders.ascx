@@ -2,6 +2,7 @@
 
 <%@ Register assembly="EclipseWebSolutions.DatePicker" namespace="EclipseWebSolutions.DatePicker" tagprefix="cc1" %>
 
+
 <asp:LoginView ID="LoginView" runat="server">
     <RoleGroups>
         <asp:RoleGroup Roles="Administrators">
@@ -100,20 +101,137 @@
                     </div>
                     <div>
                         <asp:Panel ID="OrderDetailsPanel" runat="server">
-                            <asp:DetailsView ID="BillingDetails" runat="server">
-                            </asp:DetailsView>
-                            <asp:DetailsView ID="ShippingDetails" AutoGenerateRows="false" runat="server">
-                                <Fields>
-                                    <asp:BoundField DataField="shipping_first_name" HeaderText="First name:" />
-                                    <asp:BoundField DataField="shipping_last_name" HeaderText="Last name:" />
-                                    <asp:BoundField DataField="shipping_company" HeaderText="Company" />
-                                    <asp:BoundField DataField="shipping_address" HeaderText="Address:" />
-                                    <asp:BoundField DataField="shipping_city" HeaderText="City:" />
-                                    <asp:BoundField DataField="shipping_zip" HeaderText="ZIP:" />
-                                    <asp:BoundField DataField="shipping_country" HeaderText="Country:" />
-                                    <asp:BoundField DataField="shipping_phone" HeaderText="Phone:" />
-                                </Fields>
-                            </asp:DetailsView>
+                            <table style="width:100%">
+                                <tr>
+                                    <td align="center" bgcolor="Silver">
+                                        <b>Billing info</b></td>
+                                    <td align="center" bgcolor="Silver">
+                                        <b>Shipping info</b></td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <asp:DetailsView ID="BillingDetails" runat="server" AutoGenerateRows="false" 
+                                            SkinID="detailsOrder">
+                                            <Fields>
+                                                <asp:BoundField DataField="contact_name" HeaderText="Contact name: " />
+                                                <asp:BoundField DataField="address" HeaderText="Address: " />
+                                                <asp:BoundField DataField="city" HeaderText="City: " />
+                                                <asp:BoundField DataField="zip" HeaderText="ZIP: " />
+                                                <asp:BoundField DataField="country" HeaderText="Country: " />
+                                                <asp:BoundField DataField="email" HeaderText="E-mail: " />
+                                                <asp:BoundField DataField="cc_number" HeaderText="Last 4 digits of CC: " />
+                                                <asp:BoundField DataField="ip" HeaderText="IP address: " />
+                                            </Fields>
+                                        </asp:DetailsView>
+                                    </td>
+                                    <td align="center">
+                                        <asp:DetailsView ID="ShippingDetails" runat="server" AutoGenerateRows="false" 
+                                            SkinID="detailsOrder">
+                                            <Fields>
+                                                <asp:BoundField DataField="shipping_first_name" HeaderText="First name:" />
+                                                <asp:BoundField DataField="shipping_last_name" HeaderText="Last name:" />
+                                                <asp:BoundField DataField="shipping_company" HeaderText="Company:" />
+                                                <asp:BoundField DataField="shipping_address" HeaderText="Address:" />
+                                                <asp:BoundField DataField="shipping_city" HeaderText="City:" />
+                                                <asp:BoundField DataField="shipping_zip" HeaderText="ZIP:" />
+                                                <asp:BoundField DataField="shipping_country" HeaderText="Country:" />
+                                                <asp:BoundField DataField="shipping_phone" HeaderText="Phone:" />
+                                            </Fields>
+                                        </asp:DetailsView>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        &nbsp;</td>
+                                    <td align="center">
+                                        &nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td bgcolor="Silver">
+                                        Order number:
+                                        <asp:Label ID="GoogleOrderNumberLabel" runat="server"></asp:Label>
+                                    </td>
+                                    <td align="right" bgcolor="Silver">
+                                        <asp:Button ID="CancelButton" runat="server" onclick="CancelButton_Click" 
+                                            Text="Cancel order" />
+                                        &nbsp;<asp:Button ID="ArchiveButton" runat="server" onclick="ArchiveButton_Click" 
+                                            Text="Archive order" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td bgcolor="Silver">
+                                        Financial state:
+                                        <asp:Label ID="FinancialLabel" runat="server"></asp:Label>
+                                    </td>
+                                    <td align="right" bgcolor="Silver">
+                                        <asp:Panel ID="ChargingPanel" runat="server">
+                                            <asp:Button ID="ChargeButton" runat="server" onclick="ChargeButton_Click" Text="Charge order" />
+                                            <asp:LinkButton ID="PartialChargingButton" runat="server" onclick="PartialChargingButton_Click">Partial charging</asp:LinkButton>
+                                        </asp:Panel>
+                                        <asp:Panel ID="PartialChargingPanel" runat="server">
+                                            <asp:TextBox ID="PartialAmountTextBox" runat="server"></asp:TextBox>
+                                            <asp:Button ID="ChargePartialButton" runat="server" Text="Charge" />
+                                            <asp:LinkButton ID="CancelPartialChargingButton" runat="server" onclick="CancelPartialChargingButton_Click">Cancel</asp:LinkButton>
+                                        </asp:Panel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td bgcolor="Silver">
+                                        Fulfillment state:
+                                        <asp:Label ID="FulfillmentLabel" runat="server"></asp:Label>
+                                    </td>
+                                    <td align="right" bgcolor="Silver">
+                                        <asp:LinkButton ID="RefundPanelButton" runat="server" 
+                                            onclick="RefundPanelButton_Click">Refund</asp:LinkButton>
+                                        &nbsp;
+                                        <asp:LinkButton ID="ShipPanelButton" runat="server">Ship</asp:LinkButton>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <asp:Panel ID="RefundPanel" runat="server">
+                                            <div>
+                                                <asp:TextBox ID="RefundCommentTextBox" runat="server" TextMode="MultiLine"></asp:TextBox>
+                                            </div>
+                                            <div>
+                                                Refund amount: 
+                                                <asp:TextBox ID="RefundTextBox" runat="server"></asp:TextBox>
+                                                <asp:Button ID="RefundButton" runat="server" Text="Process refund" 
+                                                    onclick="RefundButton_Click" />
+                                            </div>
+                                        </asp:Panel>
+                                        <asp:Panel ID="ShippingPanel" runat="server">
+                                        </asp:Panel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <asp:GridView ID="OrderItemsGridView" runat="server" 
+                                            AutoGenerateColumns="false">
+                                            <Columns>
+                                                <asp:BoundField DataField="item_name" HeaderText="Item name" />
+                                                <asp:BoundField DataField="item_desc" HeaderText="Description" />
+                                                <asp:BoundField DataField="qty" HeaderText="Quantity" />
+                                                <asp:BoundField DataField="price" HeaderText="Unit price" />
+                                                <asp:CommandField ButtonType="Link" SelectText="Remove" 
+                                                    ShowSelectButton="true" />
+                                            </Columns>
+                                        </asp:GridView>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" bgcolor="Silver" colspan="2">
+                                        Tax:
+                                        <asp:Label ID="TaxLabel" runat="server"></asp:Label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" bgcolor="Silver" colspan="2">
+                                        Total amount:
+                                        <asp:Label ID="TotalAmountLabel" runat="server"></asp:Label>
+                                    </td>
+                                </tr>
+                            </table>
                         </asp:Panel>
                     </div>
                 </div>
