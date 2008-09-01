@@ -18,12 +18,13 @@ public partial class systems_shop_orders : BaseUserControl
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack && Page.User.Identity.IsAuthenticated)
+        if (!IsPostBack && Page.User.Identity.IsAuthenticated && Page.User.IsInRole("Administrators"))
         {
             GridView ordersGrid = (GridView)LoginView.FindControl("OrdersGridView");
+            Panel orderDetailsPanel = (Panel)LoginView.FindControl("OrderDetailsPanel");
             ordersGrid.DataSource = Orders.Orders.GetAllOrders();
             ordersGrid.DataBind();
-            
+            orderDetailsPanel.Visible = false;
         }
 
     }
@@ -86,19 +87,160 @@ public partial class systems_shop_orders : BaseUserControl
             orderGrid.DataBind();
         }
     }
+
+    /// <summary>
+    /// Handles the SelectedIndexChanged event of the OrdersGridView control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
     protected void OrdersGridView_SelectedIndexChanged(object sender, EventArgs e)
     {
         GridView ordersGrid = (GridView)LoginView.FindControl("OrdersGridView");
         DetailsView billingDetails = (DetailsView)LoginView.FindControl("BillingDetails");
         DetailsView shippingDetails = (DetailsView)LoginView.FindControl("ShippingDetails");
         Panel orderDetailsPanel = (Panel)LoginView.FindControl("OrderDetailsPanel");
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+        Label fulfillmentLbl = (Label)LoginView.FindControl("FulfillmentLabel");
+        Label financialLbl = (Label)LoginView.FindControl("FinancialLabel");
+        Label totalAmountLbl = (Label)LoginView.FindControl("TotalAmountLabel");
+        Label taxLbl = (Label)LoginView.FindControl("TaxLabel");
+        GridView orderItemsGrid = (GridView)LoginView.FindControl("OrderItemsGridView");
+        Button cancelBtn = (Button)LoginView.FindControl("CancelButton");
+        Panel chargingPanel = (Panel)LoginView.FindControl("ChargingPanel");
+        Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
+        Panel refundPanel = (Panel)LoginView.FindControl("RefundPanel");
+
         orderDetailsPanel.Visible = true;
         ordersGrid.Visible = false;
+        partialChargingPanel.Visible = false;
+        refundPanel.Visible = false;
         long dataKey = (long)ordersGrid.SelectedDataKey.Value;
         List<order> source = Orders.Orders.GetOrderDetails(dataKey);
         List<order_item> items = Orders.Orders.GetItems(source[0].order_id);
+        List<customer> customerDetails = Orders.Orders.GetCustomerDetails(dataKey);
 
+        if (source[0].status == "CANCELLED" || source[0].status == "CANCELLED_BY_GOOGLE")
+            cancelBtn.Enabled = false;
+        else
+            cancelBtn.Enabled = true;
+        if (source[0].status != "CHARGEABLE")
+            chargingPanel.Visible = false;
+        else 
+            chargingPanel.Visible = true;
+        orderNumberLbl.Text = dataKey.ToString();
+        financialLbl.Text = source[0].status;
+        fulfillmentLbl.Text = source[0].shipping_status;
+        taxLbl.Text = source[0].tax.ToString();
+        totalAmountLbl.Text = source[0].total.ToString();
+        billingDetails.DataSource = customerDetails;
+        billingDetails.DataBind();
         shippingDetails.DataSource = source;
         shippingDetails.DataBind();
+        orderItemsGrid.DataSource = items;
+        orderItemsGrid.DataBind();
+    }
+    
+    /// <summary>
+    /// Handles the Click event of the CancelButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void CancelButton_Click(object sender, EventArgs e)
+    {
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");        
+        string reason = "Cannceled by merchant!";
+        string comment = "Item(s) not available in this moment";
+        GCheckout.OrderProcessing.CancelOrderRequest cancelReq = new GCheckout.OrderProcessing.CancelOrderRequest(orderNumberLbl.Text, reason, comment);
+        cancelReq.Send();
+    }
+
+    /// <summary>
+    /// Handles the Click event of the ArchiveButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void ArchiveButton_Click(object sender, EventArgs e)
+    {        
+        Panel orderDetailsPanel = (Panel)LoginView.FindControl("OrderDetailsPanel");
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+        GCheckout.OrderProcessing.ArchiveOrderRequest archiveReq = new GCheckout.OrderProcessing.ArchiveOrderRequest(orderNumberLbl.Text);
+        archiveReq.Send();
+        Orders.Orders.ArchiveOrder(orderNumberLbl.Text);
+        orderDetailsPanel.Visible = false;
+        Response.Redirect(Request.RawUrl);
+    }
+
+    /// <summary>
+    /// Handles the Click event of the ChargeButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void ChargeButton_Click(object sender, EventArgs e)
+    {
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+        GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(orderNumberLbl.Text);
+        chargeReq.Send();
+    }
+
+    /// <summary>
+    /// Handles the Click event of the PartialChargingButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void PartialChargingButton_Click(object sender, EventArgs e)
+    {
+        Panel chargingPanel = (Panel)LoginView.FindControl("ChargingPanel");
+        Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
+
+        partialChargingPanel.Visible = true;
+        chargingPanel.Visible = false;
+    }
+
+    /// <summary>
+    /// Handles the Click event of the CancelPartialChargingButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void CancelPartialChargingButton_Click(object sender, EventArgs e)
+    {
+        Panel chargingPanel = (Panel)LoginView.FindControl("ChargingPanel");
+        Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
+
+        partialChargingPanel.Visible = false;
+        chargingPanel.Visible = true;
+    }
+
+    /// <summary>
+    /// Handles the Click event of the RefundButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void RefundButton_Click(object sender, EventArgs e)
+    {
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+        TextBox refundCommentTB = (TextBox)LoginView.FindControl("RefundCommentTextBox");
+        TextBox refundAmountTB = (TextBox)LoginView.FindControl("RefundTextBox");
+        decimal amount = 0;
+        if (decimal.TryParse(refundAmountTB.Text, out amount) && amount != 0)
+        {
+            GCheckout.OrderProcessing.RefundOrderRequest refundReq = new GCheckout.OrderProcessing.RefundOrderRequest(orderNumberLbl.Text, refundCommentTB.Text, "USD", amount);
+            refundReq.Send();
+        }
+    }
+
+    /// <summary>
+    /// Handles the Click event of the RefundPanelButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void RefundPanelButton_Click(object sender, EventArgs e)
+    {
+        Panel refundPanel = (Panel)LoginView.FindControl("RefundPanel");
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+
+        long orderNumber = Int64.Parse(orderNumberLbl.Text);
+        List<order> refundOrder = Orders.Orders.GetOrderDetails(orderNumber);
+        if (refundOrder[0].charged_amount != 0)
+            refundPanel.Visible = true;
     }
 }

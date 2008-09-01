@@ -33,15 +33,15 @@ namespace Orders
     partial void Insertpage(page instance);
     partial void Updatepage(page instance);
     partial void Deletepage(page instance);
-    partial void Insertorder_item(order_item instance);
-    partial void Updateorder_item(order_item instance);
-    partial void Deleteorder_item(order_item instance);
     partial void Insertcustomer(customer instance);
     partial void Updatecustomer(customer instance);
     partial void Deletecustomer(customer instance);
     partial void Insertorder(order instance);
     partial void Updateorder(order instance);
     partial void Deleteorder(order instance);
+    partial void Insertorder_item(order_item instance);
+    partial void Updateorder_item(order_item instance);
+    partial void Deleteorder_item(order_item instance);
     #endregion
 		
 		public StoreDataClassesDataContext() : 
@@ -82,14 +82,6 @@ namespace Orders
 			}
 		}
 		
-		public System.Data.Linq.Table<order_item> order_items
-		{
-			get
-			{
-				return this.GetTable<order_item>();
-			}
-		}
-		
 		public System.Data.Linq.Table<customer> customers
 		{
 			get
@@ -103,6 +95,14 @@ namespace Orders
 			get
 			{
 				return this.GetTable<order>();
+			}
+		}
+		
+		public System.Data.Linq.Table<order_item> order_items
+		{
+			get
+			{
+				return this.GetTable<order_item>();
 			}
 		}
 	}
@@ -1897,212 +1897,6 @@ namespace Orders
 		}
 	}
 	
-	[Table(Name="dbo.order_items")]
-	public partial class order_item : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _order_item_id;
-		
-		private int _order_id;
-		
-		private int _item_id;
-		
-		private string _item_desc;
-		
-		private decimal _price;
-		
-		private int _qty;
-		
-		private bool _tangible;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onorder_item_idChanging(int value);
-    partial void Onorder_item_idChanged();
-    partial void Onorder_idChanging(int value);
-    partial void Onorder_idChanged();
-    partial void Onitem_idChanging(int value);
-    partial void Onitem_idChanged();
-    partial void Onitem_descChanging(string value);
-    partial void Onitem_descChanged();
-    partial void OnpriceChanging(decimal value);
-    partial void OnpriceChanged();
-    partial void OnqtyChanging(int value);
-    partial void OnqtyChanged();
-    partial void OntangibleChanging(bool value);
-    partial void OntangibleChanged();
-    #endregion
-		
-		public order_item()
-		{
-			OnCreated();
-		}
-		
-		[Column(Storage="_order_item_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int order_item_id
-		{
-			get
-			{
-				return this._order_item_id;
-			}
-			set
-			{
-				if ((this._order_item_id != value))
-				{
-					this.Onorder_item_idChanging(value);
-					this.SendPropertyChanging();
-					this._order_item_id = value;
-					this.SendPropertyChanged("order_item_id");
-					this.Onorder_item_idChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_order_id", DbType="Int NOT NULL")]
-		public int order_id
-		{
-			get
-			{
-				return this._order_id;
-			}
-			set
-			{
-				if ((this._order_id != value))
-				{
-					this.Onorder_idChanging(value);
-					this.SendPropertyChanging();
-					this._order_id = value;
-					this.SendPropertyChanged("order_id");
-					this.Onorder_idChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_item_id", DbType="Int NOT NULL")]
-		public int item_id
-		{
-			get
-			{
-				return this._item_id;
-			}
-			set
-			{
-				if ((this._item_id != value))
-				{
-					this.Onitem_idChanging(value);
-					this.SendPropertyChanging();
-					this._item_id = value;
-					this.SendPropertyChanged("item_id");
-					this.Onitem_idChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_item_desc", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
-		public string item_desc
-		{
-			get
-			{
-				return this._item_desc;
-			}
-			set
-			{
-				if ((this._item_desc != value))
-				{
-					this.Onitem_descChanging(value);
-					this.SendPropertyChanging();
-					this._item_desc = value;
-					this.SendPropertyChanged("item_desc");
-					this.Onitem_descChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_price", DbType="Money NOT NULL")]
-		public decimal price
-		{
-			get
-			{
-				return this._price;
-			}
-			set
-			{
-				if ((this._price != value))
-				{
-					this.OnpriceChanging(value);
-					this.SendPropertyChanging();
-					this._price = value;
-					this.SendPropertyChanged("price");
-					this.OnpriceChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_qty", DbType="Int NOT NULL")]
-		public int qty
-		{
-			get
-			{
-				return this._qty;
-			}
-			set
-			{
-				if ((this._qty != value))
-				{
-					this.OnqtyChanging(value);
-					this.SendPropertyChanging();
-					this._qty = value;
-					this.SendPropertyChanged("qty");
-					this.OnqtyChanged();
-				}
-			}
-		}
-		
-		[Column(Storage="_tangible", DbType="Bit NOT NULL")]
-		public bool tangible
-		{
-			get
-			{
-				return this._tangible;
-			}
-			set
-			{
-				if ((this._tangible != value))
-				{
-					this.OntangibleChanging(value);
-					this.SendPropertyChanging();
-					this._tangible = value;
-					this.SendPropertyChanged("tangible");
-					this.OntangibleChanged();
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
 	[Table(Name="dbo.customers")]
 	public partial class customer : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -3066,6 +2860,236 @@ namespace Orders
 					this._charged_amount = value;
 					this.SendPropertyChanged("charged_amount");
 					this.Oncharged_amountChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[Table(Name="dbo.order_items")]
+	public partial class order_item : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _order_item_id;
+		
+		private int _order_id;
+		
+		private int _item_id;
+		
+		private string _item_desc;
+		
+		private decimal _price;
+		
+		private int _qty;
+		
+		private bool _tangible;
+		
+		private string _item_name;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onorder_item_idChanging(int value);
+    partial void Onorder_item_idChanged();
+    partial void Onorder_idChanging(int value);
+    partial void Onorder_idChanged();
+    partial void Onitem_idChanging(int value);
+    partial void Onitem_idChanged();
+    partial void Onitem_descChanging(string value);
+    partial void Onitem_descChanged();
+    partial void OnpriceChanging(decimal value);
+    partial void OnpriceChanged();
+    partial void OnqtyChanging(int value);
+    partial void OnqtyChanged();
+    partial void OntangibleChanging(bool value);
+    partial void OntangibleChanged();
+    partial void Onitem_nameChanging(string value);
+    partial void Onitem_nameChanged();
+    #endregion
+		
+		public order_item()
+		{
+			OnCreated();
+		}
+		
+		[Column(Storage="_order_item_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int order_item_id
+		{
+			get
+			{
+				return this._order_item_id;
+			}
+			set
+			{
+				if ((this._order_item_id != value))
+				{
+					this.Onorder_item_idChanging(value);
+					this.SendPropertyChanging();
+					this._order_item_id = value;
+					this.SendPropertyChanged("order_item_id");
+					this.Onorder_item_idChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_order_id", DbType="Int NOT NULL")]
+		public int order_id
+		{
+			get
+			{
+				return this._order_id;
+			}
+			set
+			{
+				if ((this._order_id != value))
+				{
+					this.Onorder_idChanging(value);
+					this.SendPropertyChanging();
+					this._order_id = value;
+					this.SendPropertyChanged("order_id");
+					this.Onorder_idChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_item_id", DbType="Int NOT NULL")]
+		public int item_id
+		{
+			get
+			{
+				return this._item_id;
+			}
+			set
+			{
+				if ((this._item_id != value))
+				{
+					this.Onitem_idChanging(value);
+					this.SendPropertyChanging();
+					this._item_id = value;
+					this.SendPropertyChanged("item_id");
+					this.Onitem_idChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_item_desc", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string item_desc
+		{
+			get
+			{
+				return this._item_desc;
+			}
+			set
+			{
+				if ((this._item_desc != value))
+				{
+					this.Onitem_descChanging(value);
+					this.SendPropertyChanging();
+					this._item_desc = value;
+					this.SendPropertyChanged("item_desc");
+					this.Onitem_descChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_price", DbType="Money NOT NULL")]
+		public decimal price
+		{
+			get
+			{
+				return this._price;
+			}
+			set
+			{
+				if ((this._price != value))
+				{
+					this.OnpriceChanging(value);
+					this.SendPropertyChanging();
+					this._price = value;
+					this.SendPropertyChanged("price");
+					this.OnpriceChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_qty", DbType="Int NOT NULL")]
+		public int qty
+		{
+			get
+			{
+				return this._qty;
+			}
+			set
+			{
+				if ((this._qty != value))
+				{
+					this.OnqtyChanging(value);
+					this.SendPropertyChanging();
+					this._qty = value;
+					this.SendPropertyChanged("qty");
+					this.OnqtyChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_tangible", DbType="Bit NOT NULL")]
+		public bool tangible
+		{
+			get
+			{
+				return this._tangible;
+			}
+			set
+			{
+				if ((this._tangible != value))
+				{
+					this.OntangibleChanging(value);
+					this.SendPropertyChanging();
+					this._tangible = value;
+					this.SendPropertyChanged("tangible");
+					this.OntangibleChanged();
+				}
+			}
+		}
+		
+		[Column(Storage="_item_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string item_name
+		{
+			get
+			{
+				return this._item_name;
+			}
+			set
+			{
+				if ((this._item_name != value))
+				{
+					this.Onitem_nameChanging(value);
+					this.SendPropertyChanging();
+					this._item_name = value;
+					this.SendPropertyChanged("item_name");
+					this.Onitem_nameChanged();
 				}
 			}
 		}

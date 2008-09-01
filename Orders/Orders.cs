@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,7 +60,7 @@ namespace Orders
                     newOrder.order_by = UserName;
                     newOrder.sub_total = 0;
                     newOrder.total = N1.ordertotal.Value;
-                    newOrder.status = "Order placed";
+                    newOrder.status = "NEW";
                     newOrder.root_id = 1;
                     newOrder.shipping_first_name = ShipToFirstName;
                     newOrder.shipping_last_name = ShipToLatsName;
@@ -92,6 +93,7 @@ namespace Orders
                         newItem.qty = quantity;
                         newItem.tangible = tangible;
                         newItem.item_desc = desc;
+                        newItem.item_name = ThisItem.itemname;
 
                         db.order_items.InsertOnSubmit(newItem);
                         db.SubmitChanges();
@@ -121,7 +123,7 @@ namespace Orders
                         newCustomer.contact_name = contactName;
                         newCustomer.email = email;
                         newCustomer.address = N2.riskinformation.billingaddress.address1;
-                        newCustomer.city = contactName;
+                        newCustomer.city = city;
                         newCustomer.zip = zip;
                         newCustomer.country = country;
                         newCustomer.avs = char.Parse(N2.riskinformation.avsresponse);
@@ -219,7 +221,9 @@ namespace Orders
         public static List<order> GetAllOrders()
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
-            List<order> listOfAllOrderes = (from or in db.orders select or).ToList<order>();
+            List<order> listOfAllOrderes = (from or in db.orders 
+                                            where or.root_id != 999
+                                            select or).ToList<order>();
             return listOfAllOrderes;
         }
 
@@ -273,6 +277,35 @@ namespace Orders
                                              where i.order_id == orderId
                                              select i).ToList<order_item>();
             return itemsDetails;
+        }
+
+        /// <summary>
+        /// Gets the customer details.
+        /// </summary>
+        /// <param name="googleOrderNumber">The google order number.</param>
+        /// <returns>List of customer details</returns>
+        public static List<customer> GetCustomerDetails(long googleOrderNumber)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            List<customer> customerDetails = (from c in db.customers
+                                              where c.google_order_number == googleOrderNumber
+                                              select c).ToList<customer>();
+            return customerDetails;
+        }
+
+        /// <summary>
+        /// Archives the order.
+        /// </summary>
+        /// <param name="orderNumber">The order number.</param>
+        public static void ArchiveOrder(string orderNumber)
+        {
+            long googleOrderNumber = Int64.Parse(orderNumber);
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            List<order> archiveOrder = (from or in db.orders
+                               where or.google_order_number == googleOrderNumber
+                               select or).ToList<order>();
+            archiveOrder[0].root_id = 999;
+            db.SubmitChanges();
         }
     }
 
