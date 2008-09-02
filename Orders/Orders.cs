@@ -23,10 +23,8 @@ namespace Orders
         public static string GetItemDescription(int item_id)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
-
-            List<string> description = (from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary).ToList();
-
-            return description[0].ToString();
+            string description = (from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary).Single<string>();
+            return description;
         }
 
         /// <summary>
@@ -73,8 +71,7 @@ namespace Orders
                     db.orders.InsertOnSubmit(newOrder);
                     db.SubmitChanges();
 
-                    List<int> list = (from o in db.orders where o.google_order_number == OrderNumber1 select o.order_id).ToList();
-                    int orderId = list[0];                    
+                    int orderId = (from o in db.orders where o.google_order_number == OrderNumber1 select o.order_id).Single<int>();
 
                     foreach (Item ThisItem in N1.shoppingcart.items)
                     {
@@ -187,7 +184,7 @@ namespace Orders
 
                     order thisOrder3 = (from or in db.orders where or.google_order_number == googleOrderNumber3 select or).Single<order>();
                     thisOrder3.status = "REFUNDED";
-                    thisOrder3.total = refundedAmount;
+                    thisOrder3.charged_amount -= refundedAmount;
                     db.SubmitChanges();
 
                     break;
@@ -220,6 +217,7 @@ namespace Orders
         /// <returns>List of all orders</returns>
         public static List<order> GetAllOrders()
         {
+
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
             List<order> listOfAllOrderes = (from or in db.orders 
                                             where or.root_id != 999
@@ -255,13 +253,13 @@ namespace Orders
         /// Gets the order details.
         /// </summary>
         /// <param name="googleOrderNumber">The google order number.</param>
-        /// <returns>List of details</returns>
+        /// <returns>Details for the order</returns>
         public static List<order> GetOrderDetails(long googleOrderNumber)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
             List<order> orderDetails = (from or in db.orders
-                                       where or.google_order_number == googleOrderNumber
-                                       select or).ToList<order>();
+                                        where or.google_order_number == googleOrderNumber
+                                        select or).ToList<order>();
             return orderDetails;
         }
 
@@ -269,7 +267,7 @@ namespace Orders
         /// Gets the items.
         /// </summary>
         /// <param name="orderId">The order id.</param>
-        /// <returns>Items form order with given orderID</returns>
+        /// <returns>Items from order with given orderID</returns>
         public static List<order_item> GetItems(int orderId)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
@@ -283,7 +281,7 @@ namespace Orders
         /// Gets the customer details.
         /// </summary>
         /// <param name="googleOrderNumber">The google order number.</param>
-        /// <returns>List of customer details</returns>
+        /// <returns>Customer details</returns>
         public static List<customer> GetCustomerDetails(long googleOrderNumber)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
@@ -301,10 +299,10 @@ namespace Orders
         {
             long googleOrderNumber = Int64.Parse(orderNumber);
             StoreDataClassesDataContext db = new StoreDataClassesDataContext();
-            List<order> archiveOrder = (from or in db.orders
-                               where or.google_order_number == googleOrderNumber
-                               select or).ToList<order>();
-            archiveOrder[0].root_id = 999;
+            order archiveOrder = (from or in db.orders
+                                        where or.google_order_number == googleOrderNumber
+                                        select or).Single<order>();
+            archiveOrder.root_id = 999;
             db.SubmitChanges();
         }
     }

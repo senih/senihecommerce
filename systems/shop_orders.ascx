@@ -97,7 +97,7 @@
                                 <asp:CommandField ButtonType="Button" SelectText="Details" ShowSelectButton="true" />
                             </Columns>
                         </asp:GridView>
-                        <asp:Label ID="StatusLabel" runat="server"></asp:Label>
+                        <asp:Label ID="StatusLabel" runat="server" ForeColor="Red"></asp:Label>
                     </div>
                     <div>
                         <asp:Panel ID="OrderDetailsPanel" runat="server">
@@ -170,7 +170,8 @@
                                         </asp:Panel>
                                         <asp:Panel ID="PartialChargingPanel" runat="server">
                                             <asp:TextBox ID="PartialAmountTextBox" runat="server"></asp:TextBox>
-                                            <asp:Button ID="ChargePartialButton" runat="server" Text="Charge" />
+                                            <asp:Button ID="ChargePartialButton" runat="server" Text="Charge" 
+                                                onclick="ChargePartialButton_Click" />
                                             <asp:LinkButton ID="CancelPartialChargingButton" runat="server" onclick="CancelPartialChargingButton_Click">Cancel</asp:LinkButton>
                                         </asp:Panel>
                                     </td>
@@ -184,25 +185,76 @@
                                         <asp:LinkButton ID="RefundPanelButton" runat="server" 
                                             onclick="RefundPanelButton_Click">Refund</asp:LinkButton>
                                         &nbsp;
-                                        <asp:LinkButton ID="ShipPanelButton" runat="server">Ship</asp:LinkButton>
+                                        <asp:LinkButton ID="ShipPanelButton" runat="server" 
+                                            onclick="ShipPanelButton_Click">Ship</asp:LinkButton>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">                                        
+                                        <asp:Panel ID="RefundPanel" runat="server">
+                                            <table>
+                                            <tr>
+                                                <td>Comments:</td>
+                                                <td>
+                                                    <asp:TextBox ID="RefundCommentTextBox" runat="server" TextMode="MultiLine"></asp:TextBox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Refund amount:</td>
+                                                <td>
+                                                    <asp:TextBox ID="RefundTextBox" runat="server"></asp:TextBox>
+                                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" 
+                                                        ControlToValidate="RefundTextBox" ErrorMessage="*"></asp:RequiredFieldValidator>
+                                                    <asp:RangeValidator ID="RangeValidator" runat="server" 
+                                                        ControlToValidate="RefundTextBox" ErrorMessage="*" Type="Double"></asp:RangeValidator>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <asp:Label ID="RefundStatusLabel" runat="server" ForeColor="Red"></asp:Label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <asp:Button ID="RefundButton" runat="server" Text="Process refund" 
+                                                        onclick="RefundButton_Click" />
+                                                    &nbsp;<asp:Button ID="CancelRefundButton" runat="server" 
+                                                        onclick="CancelRefundButton_Click" Text="Cancel" 
+                                                        CausesValidation="False" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        </asp:Panel>
+                                        <asp:Panel ID="ShippingPanel" runat="server">
+                                            <table>
+                                                <tr>
+                                                    <td align="right">Carrier:</td>
+                                                    <td>
+                                                        <asp:TextBox ID="CarrierTextBox" runat="server"></asp:TextBox>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">Tracking #:</td>
+                                                    <td>
+                                                        <asp:TextBox ID="TrackingNumberTextBox" runat="server"></asp:TextBox>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <asp:Button ID="SendShippingInfoButton" runat="server" 
+                                                            Text="Send shipping info" onclick="SendShippingInfoButton_Click" />
+                                                        &nbsp;<asp:Button ID="CancelSendingShippingInfoButton" runat="server" 
+                                                            Text="Cancel" CausesValidation="False" 
+                                                            onclick="CancelSendingShippingInfoButton_Click" />
+                                                    </td>
+                                                </tr>
+                                            </table>                                               
+                                        </asp:Panel>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">
-                                        <asp:Panel ID="RefundPanel" runat="server">
-                                            <div>
-                                                <asp:TextBox ID="RefundCommentTextBox" runat="server" TextMode="MultiLine"></asp:TextBox>
-                                            </div>
-                                            <div>
-                                                Refund amount: 
-                                                <asp:TextBox ID="RefundTextBox" runat="server"></asp:TextBox>
-                                                <asp:Button ID="RefundButton" runat="server" Text="Process refund" 
-                                                    onclick="RefundButton_Click" />
-                                            </div>
-                                        </asp:Panel>
-                                        <asp:Panel ID="ShippingPanel" runat="server">
-                                        </asp:Panel>
-                                    </td>
+                                        &nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">
@@ -213,8 +265,6 @@
                                                 <asp:BoundField DataField="item_desc" HeaderText="Description" />
                                                 <asp:BoundField DataField="qty" HeaderText="Quantity" />
                                                 <asp:BoundField DataField="price" HeaderText="Unit price" />
-                                                <asp:CommandField ButtonType="Link" SelectText="Remove" 
-                                                    ShowSelectButton="true" />
                                             </Columns>
                                         </asp:GridView>
                                     </td>
@@ -228,7 +278,13 @@
                                 <tr>
                                     <td align="right" bgcolor="Silver" colspan="2">
                                         Total amount:
-                                        <asp:Label ID="TotalAmountLabel" runat="server"></asp:Label>
+                                        <asp:Label ID="TotalAmountLabel" runat="server" Font-Bold="True"></asp:Label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" bgcolor="Silver" colspan="2">
+                                        Charged amount:
+                                        <asp:Label ID="ChargedAmountLabel" runat="server" Font-Bold="True"></asp:Label>
                                     </td>
                                 </tr>
                             </table>
