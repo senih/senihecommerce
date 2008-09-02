@@ -104,16 +104,19 @@ public partial class systems_shop_orders : BaseUserControl
         Label financialLbl = (Label)LoginView.FindControl("FinancialLabel");
         Label totalAmountLbl = (Label)LoginView.FindControl("TotalAmountLabel");
         Label taxLbl = (Label)LoginView.FindControl("TaxLabel");
+        Label chargedAmountLbl = (Label)LoginView.FindControl("ChargedAmountLabel");
         GridView orderItemsGrid = (GridView)LoginView.FindControl("OrderItemsGridView");
         Button cancelBtn = (Button)LoginView.FindControl("CancelButton");
         Panel chargingPanel = (Panel)LoginView.FindControl("ChargingPanel");
         Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
         Panel refundPanel = (Panel)LoginView.FindControl("RefundPanel");
-
+        Panel shippingPanel = (Panel)LoginView.FindControl("ShippingPanel");
+        
         orderDetailsPanel.Visible = true;
         ordersGrid.Visible = false;
         partialChargingPanel.Visible = false;
         refundPanel.Visible = false;
+        shippingPanel.Visible = false;
         long dataKey = (long)ordersGrid.SelectedDataKey.Value;
         List<order> source = Orders.Orders.GetOrderDetails(dataKey);
         List<order_item> items = Orders.Orders.GetItems(source[0].order_id);
@@ -132,6 +135,7 @@ public partial class systems_shop_orders : BaseUserControl
         fulfillmentLbl.Text = source[0].shipping_status;
         taxLbl.Text = source[0].tax.ToString();
         totalAmountLbl.Text = source[0].total.ToString();
+        chargedAmountLbl.Text = source[0].charged_amount.ToString();
         billingDetails.DataSource = customerDetails;
         billingDetails.DataBind();
         shippingDetails.DataSource = source;
@@ -191,9 +195,35 @@ public partial class systems_shop_orders : BaseUserControl
     {
         Panel chargingPanel = (Panel)LoginView.FindControl("ChargingPanel");
         Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
-
+        
         partialChargingPanel.Visible = true;
-        chargingPanel.Visible = false;
+        chargingPanel.Visible = false;        
+    }
+
+    /// <summary>
+    /// Handles the Click event of the ChargePartialButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void ChargePartialButton_Click(object sender, EventArgs e)
+    {
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+        TextBox partialAmountTB = (TextBox)LoginView.FindControl("PartialAmountTextBox");
+        Label totalAmountLbl = (Label)LoginView.FindControl("TotalAmountLabel");
+        Label statusLabel = (Label)LoginView.FindControl("StatusLabel");
+        Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
+        decimal total = decimal.Parse(totalAmountLbl.Text);
+        decimal amount = 0;
+        if (decimal.TryParse(partialAmountTB.Text, out amount) && amount != 0 && amount <= total)
+        {
+            GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(orderNumberLbl.Text, "USD", amount);
+            chargeReq.Send();
+            statusLabel.Text = "";
+            partialChargingPanel.Visible = false;
+        }
+        else
+            statusLabel.Text = "The entered amount is not correct!";
+
     }
 
     /// <summary>
@@ -205,9 +235,11 @@ public partial class systems_shop_orders : BaseUserControl
     {
         Panel chargingPanel = (Panel)LoginView.FindControl("ChargingPanel");
         Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
+        Label statusLabel = (Label)LoginView.FindControl("StatusLabel");
 
         partialChargingPanel.Visible = false;
         chargingPanel.Visible = true;
+        statusLabel.Text = "";
     }
 
     /// <summary>
@@ -217,15 +249,27 @@ public partial class systems_shop_orders : BaseUserControl
     /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
     protected void RefundButton_Click(object sender, EventArgs e)
     {
+        RangeValidator rangeValidator = (RangeValidator)LoginView.FindControl("RangeValidator");
         Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
         TextBox refundCommentTB = (TextBox)LoginView.FindControl("RefundCommentTextBox");
         TextBox refundAmountTB = (TextBox)LoginView.FindControl("RefundTextBox");
+        Label chargedAmountLbl = (Label)LoginView.FindControl("ChargedAmountLabel");
+        Label refundStatusLbl = (Label)LoginView.FindControl("RefundStatusLabel");
+        Panel refundPanel = (Panel)LoginView.FindControl("RefundPanel");
+
+        decimal total = decimal.Parse(chargedAmountLbl.Text);
+        rangeValidator.MaximumValue = total.ToString();
         decimal amount = 0;
-        if (decimal.TryParse(refundAmountTB.Text, out amount) && amount != 0)
+        if (decimal.TryParse(refundAmountTB.Text, out amount) && amount != 0 && amount <= total)
         {
             GCheckout.OrderProcessing.RefundOrderRequest refundReq = new GCheckout.OrderProcessing.RefundOrderRequest(orderNumberLbl.Text, refundCommentTB.Text, "USD", amount);
             refundReq.Send();
+            refundStatusLbl.Text = "";
+            refundPanel.Visible = false;
+
         }
+        else
+            refundStatusLbl.Text = "The entered amount is not correct!";
     }
 
     /// <summary>
@@ -242,5 +286,57 @@ public partial class systems_shop_orders : BaseUserControl
         List<order> refundOrder = Orders.Orders.GetOrderDetails(orderNumber);
         if (refundOrder[0].charged_amount != 0)
             refundPanel.Visible = true;
+    }
+
+    /// <summary>
+    /// Handles the Click event of the CancelRefundButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void CancelRefundButton_Click(object sender, EventArgs e)
+    {
+        Panel refundPanel = (Panel)LoginView.FindControl("RefundPanel");
+        Label refundStatusLbl = (Label)LoginView.FindControl("RefundStatusLabel");
+        refundStatusLbl.Text = "";
+        refundPanel.Visible = false;
+    }
+
+    /// <summary>
+    /// Handles the Click event of the ShipPanelButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void ShipPanelButton_Click(object sender, EventArgs e)
+    {
+        Panel shippingPanel = (Panel)LoginView.FindControl("ShippingPanel");
+        shippingPanel.Visible = true;
+    }
+
+    /// <summary>
+    /// Handles the Click event of the SendShippingInfoButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void SendShippingInfoButton_Click(object sender, EventArgs e)
+    {
+        TextBox carrierTB = (TextBox)LoginView.FindControl("CarrierTextBox");
+        TextBox trackingNumberTB = (TextBox)LoginView.FindControl("TrackingNumberTextBox");
+        Label orderNumberLbl = (Label)LoginView.FindControl("GoogleOrderNumberLabel");
+        Panel shippingPanel = (Panel)LoginView.FindControl("ShippingPanel");
+
+        GCheckout.OrderProcessing.DeliverOrderRequest deliverReq = new GCheckout.OrderProcessing.DeliverOrderRequest(orderNumberLbl.Text, carrierTB.Text, trackingNumberTB.Text, true);
+        deliverReq.Send();
+        shippingPanel.Visible = false;
+    }
+
+    /// <summary>
+    /// Handles the Click event of the CancelSendingShippingInfoButton control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+    protected void CancelSendingShippingInfoButton_Click(object sender, EventArgs e)
+    {
+        Panel shippingPanel = (Panel)LoginView.FindControl("ShippingPanel");
+        shippingPanel.Visible = false;
     }
 }
