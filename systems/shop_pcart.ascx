@@ -56,28 +56,28 @@
             dtCart = Session("Cart")
             
             'If there is tangible product, then use shipping
-            'Dim drCart As DataRow
-            'For Each drCart In dtCart.Rows
-            '    If Convert.ToBoolean(drCart("tangible")) Then
-            '        bUseShipping = True
-            '        Exit For
-            '    End If
-            'Next
+            Dim drCart As DataRow
+            For Each drCart In dtCart.Rows
+                If Convert.ToBoolean(drCart("tangible")) Then
+                    bUseShipping = True
+                    Exit For
+                End If
+            Next
         End If
         
         If Not Page.IsPostBack Then
             If Request.QueryString("s") = "ship" Then
-                'If Me.IsUserLoggedIn Then
-                If bUseShipping Then
-                    Wizard1.ActiveStepIndex = 2 'Show Shipping (Form)
-                    ShowShipping()
+                If Me.IsUserLoggedIn Then
+                    If bUseShipping Then
+                        Wizard1.ActiveStepIndex = 2 'Show Shipping (Form)
+                        ShowShipping()
+                    Else
+                        Wizard1.ActiveStepIndex = 3 'Show Order Review
+                        ShowReview()
+                    End If
                 Else
-                    Wizard1.ActiveStepIndex = 3 'Show Order Review
-                    ShowReview()
+                    Response.Redirect(HttpContext.Current.Items("_page"))
                 End If
-                'Else
-                '    Response.Redirect(HttpContext.Current.Items("_page"))
-                'End If
             Else
                 If Not IsNothing(Request.QueryString("item")) Then
                     nItemId = CInt(Request.QueryString("item"))
@@ -105,7 +105,7 @@
                     lnkContinue.Visible = False
                 End If
             End If
-        End If
+            End If
         
         'ddShippingState.Attributes.Add("onchange", "ddStateChange(this)")
     End Sub
@@ -261,34 +261,34 @@
         oCommand.Parameters.Add("@root_id", SqlDbType.Int).Value = Me.RootID
         oCommand.Connection = oConn
         nOrderId = oCommand.ExecuteScalar()
-        
-        sSQL = "INSERT INTO order_items (order_id,item_id,item_desc,price,qty,tangible) " & _
-            "VALUES (@order_id,@item_id,@item_desc,@price,@qty,@tangible)"
-        Dim drCart As DataRow
-        dtCart = Session("Cart")
-        
-        For Each drCart In dtCart.Rows
-            oCommand = New SqlCommand(sSQL)
-            oCommand.CommandType = CommandType.Text
-            oCommand.Parameters.Add("@order_id", SqlDbType.Int).Value = nOrderId
-            oCommand.Parameters.Add("@item_id", SqlDbType.Int).Value = drCart("item_id")
-            oCommand.Parameters.Add("@item_desc", SqlDbType.NVarChar, 255).Value = drCart("item_desc")
-            oCommand.Parameters.Add("@price", SqlDbType.Money).Value = drCart("current_price")
-            oCommand.Parameters.Add("@qty", SqlDbType.Int).Value = drCart("qty")
-            oCommand.Parameters.Add("@tangible", SqlDbType.Bit).Value = drCart("tangible")
-            oCommand.Connection = oConn
-            oCommand.ExecuteNonQuery()
-        Next
-       
+
+        '    sSQL = "INSERT INTO order_items (order_id,item_id,item_desc,price,qty,tangible) " & _
+        '        "VALUES (@order_id,@item_id,@item_desc,@price,@qty,@tangible)"
+        '    Dim drCart As DataRow
+        '    dtCart = Session("Cart")
+
+        '    For Each drCart In dtCart.Rows
+        '        oCommand = New SqlCommand(sSQL)
+        '        oCommand.CommandType = CommandType.Text
+        '        oCommand.Parameters.Add("@order_id", SqlDbType.Int).Value = nOrderId
+        '        oCommand.Parameters.Add("@item_id", SqlDbType.Int).Value = drCart("item_id")
+        '        oCommand.Parameters.Add("@item_desc", SqlDbType.NVarChar, 255).Value = drCart("item_desc")
+        '        oCommand.Parameters.Add("@price", SqlDbType.Money).Value = drCart("current_price")
+        '        oCommand.Parameters.Add("@qty", SqlDbType.Int).Value = drCart("qty")
+        '        oCommand.Parameters.Add("@tangible", SqlDbType.Bit).Value = drCart("tangible")
+        '        oCommand.Connection = oConn
+        '        oCommand.ExecuteNonQuery()
+        '    Next
+
         oCommand.Dispose()
         oConn.Close()
         oConn = Nothing
-        
+
         Return nOrderId
     End Function
             
     Protected Sub SaveShipping(ByVal nOrderId As Integer)
-        
+
         Dim sSQL As String
         Dim oConn As SqlConnection
         Dim oCommand As SqlCommand
@@ -301,11 +301,11 @@
             "WHERE order_id=@order_id"
         oCommand = New SqlCommand(sSQL)
         oCommand.CommandType = CommandType.Text
-        
+
         Dim drShipping As DataRow
         dtShipping = Session("Shipping")
         drShipping = dtShipping.Rows(0)
-        
+
         oCommand.Parameters.Add("@shipping_first_name", SqlDbType.NVarChar, 50).Value = drShipping("shipping_first_name")
         oCommand.Parameters.Add("@shipping_last_name", SqlDbType.NVarChar, 50).Value = drShipping("shipping_last_name")
         oCommand.Parameters.Add("@shipping_company", SqlDbType.NVarChar, 50).Value = drShipping("shipping_company")
@@ -698,50 +698,50 @@
             Return (total_tangible) * rate / 100
         Else
             Return (total_tangible + shipping_cost) * rate / 100
-        End If       
+        End If
     End Function
     
-    Function GetPaypalPaymentUrl(ByVal nOrderId As Integer) As String
+    'Function GetPaypalPaymentUrl(ByVal nOrderId As Integer) As String
 
-        Dim sAmount As String = GetSubTotal().ToString("N2") '.Replace(",", ".")
-        If (sAmount.Substring(sAmount.Length - 3, 1) = ",") Then '1.000,00 => 1,000.00
-            sAmount = sAmount.Replace(",", "#")
-            sAmount = sAmount.Replace(".", ",")
-            sAmount = sAmount.Replace("#", ".")
-        End If
+    '    Dim sAmount As String = GetSubTotal().ToString("N2") '.Replace(",", ".")
+    '    If (sAmount.Substring(sAmount.Length - 3, 1) = ",") Then '1.000,00 => 1,000.00
+    '        sAmount = sAmount.Replace(",", "#")
+    '        sAmount = sAmount.Replace(".", ",")
+    '        sAmount = sAmount.Replace("#", ".")
+    '    End If
 
-        Dim sShipping As String = GetShipping().ToString("N2").Replace(",", ".")
-        Dim sTax As String = GetTax().ToString("N2").Replace(",", ".")
-        
-        Dim sBaseUrl As String = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, "") & Request.ApplicationPath
-        If Not sBaseUrl.EndsWith("/") Then sBaseUrl += "/"
-        
-        Dim sNotifyUrl As String = HttpUtility.UrlEncode(sBaseUrl & sPaypalNotifyPage)
-        Dim sReturnUrl As String = HttpUtility.UrlEncode(sBaseUrl & sPaypalReturnPage & "?item_number=" & nOrderId.ToString)
-        Dim sCancelUrl As String = HttpUtility.UrlEncode(sBaseUrl & sPaypalCancelPage)
-        Dim sBusiness As String = HttpUtility.UrlEncode(sPaypalEmail)
-        Dim sDescription As String = HttpUtility.UrlEncode(sOrderDescription)
-               
-        Dim sPaymentUrl As String
-        sPaymentUrl = sPaypalURL & "?cmd=_xclick"
-        sPaymentUrl += "&upload=1"
-        sPaymentUrl += "&rm=2" 'POST
-        sPaymentUrl += "&no_shipping=1" '1=not ask shipping address, 2=must enter
-        sPaymentUrl += "&no_note=1" 'not prompted to include a note
-        sPaymentUrl += "&currency_code=" & sCurrencyCode
-        sPaymentUrl += "&business=" & sBusiness
-        sPaymentUrl += "&item_number=" & nOrderId.ToString 'ditampilkan di bwh item_name
-        sPaymentUrl += "&custom=" & nOrderId.ToString 'sembarang (tdk ditampilkan)
-        sPaymentUrl += "&item_name=" & sDescription
-        sPaymentUrl += "&amount=" & sAmount
-        sPaymentUrl += "&shipping=" & sShipping
-        sPaymentUrl += "&tax=" & sTax
-        sPaymentUrl += "&notify_url=" & sNotifyUrl
-        sPaymentUrl += "&return=" & sReturnUrl
-        sPaymentUrl += "&cancel_return=" & sCancelUrl
+    '    Dim sShipping As String = GetShipping().ToString("N2").Replace(",", ".")
+    '    Dim sTax As String = GetTax().ToString("N2").Replace(",", ".")
 
-        Return sPaymentUrl
-    End Function
+    '    Dim sBaseUrl As String = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, "") & Request.ApplicationPath
+    '    If Not sBaseUrl.EndsWith("/") Then sBaseUrl += "/"
+
+    '    Dim sNotifyUrl As String = HttpUtility.UrlEncode(sBaseUrl & sPaypalNotifyPage)
+    '    Dim sReturnUrl As String = HttpUtility.UrlEncode(sBaseUrl & sPaypalReturnPage & "?item_number=" & nOrderId.ToString)
+    '    Dim sCancelUrl As String = HttpUtility.UrlEncode(sBaseUrl & sPaypalCancelPage)
+    '    Dim sBusiness As String = HttpUtility.UrlEncode(sPaypalEmail)
+    '    Dim sDescription As String = HttpUtility.UrlEncode(sOrderDescription)
+
+    '    Dim sPaymentUrl As String
+    '    sPaymentUrl = sPaypalURL & "?cmd=_xclick"
+    '    sPaymentUrl += "&upload=1"
+    '    sPaymentUrl += "&rm=2" 'POST
+    '    sPaymentUrl += "&no_shipping=1" '1=not ask shipping address, 2=must enter
+    '    sPaymentUrl += "&no_note=1" 'not prompted to include a note
+    '    sPaymentUrl += "&currency_code=" & sCurrencyCode
+    '    sPaymentUrl += "&business=" & sBusiness
+    '    sPaymentUrl += "&item_number=" & nOrderId.ToString 'ditampilkan di bwh item_name
+    '    sPaymentUrl += "&custom=" & nOrderId.ToString 'sembarang (tdk ditampilkan)
+    '    sPaymentUrl += "&item_name=" & sDescription
+    '    sPaymentUrl += "&amount=" & sAmount
+    '    sPaymentUrl += "&shipping=" & sShipping
+    '    sPaymentUrl += "&tax=" & sTax
+    '    sPaymentUrl += "&notify_url=" & sNotifyUrl
+    '    sPaymentUrl += "&return=" & sReturnUrl
+    '    sPaymentUrl += "&cancel_return=" & sCancelUrl
+
+    '    Return sPaymentUrl
+    'End Function
     
 
     '*** OTHERS (UI) ***
@@ -852,7 +852,8 @@
             Dim Req As CheckoutShoppingCartRequest = GCheckoutButton1.CreateRequest()
             Dim drCart As DataRow
             dtCart = Session("Cart")
-            Dim nShipping As Decimal = GetShipping()
+            Dim shipping As Decimal = GetShipping()
+            Dim tax As Decimal = GetTax()
             For Each drCart In dtCart.Rows
                 Dim xmlDoc1 As XmlDocument = New XmlDocument()
                 Dim xmlNode1 As XmlNode = xmlDoc1.CreateElement("item-id")
@@ -860,8 +861,11 @@
                 Dim description As String = Orders.Orders.GetItemDescription(drCart("item_id"))
                 Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), xmlNode1)
             Next
-            If nShipping <> 0 Then
-                Req.AddFlatRateShippingMethod("Makedonski posti", nShipping)
+            If bUseShipping Then
+                Req.AddItem("Shipping", "Cost for shipping", shipping, 1)
+            End If
+            If tax <> 0 Then
+                Req.AddItem("Tax", "Cost for tax", tax, 1)
             End If
             Dim xmlDoc2 As XmlDocument = New XmlDocument
             Dim xmlNode2 As XmlNode = xmlDoc2.CreateElement("user-name")
@@ -871,6 +875,10 @@
             Req.EditCartUrl = "http://localhost/teststore/shop_pcart.aspx"
             Dim Resp As GCheckoutResponse = Req.Send()
             If Req.Send.IsGood Then
+                Dim orderId As Integer = SaveOrder()
+                If bUseShipping Then
+                    SaveShipping(orderId)
+                End If
                 Response.Redirect(Resp.RedirectUrl, True)
             End If
         Else
