@@ -2299,7 +2299,7 @@ namespace Orders
 		
 		private string _download_status;
 		
-		private long _google_order_number;
+		private System.Nullable<long> _google_order_number;
 		
 		private System.Nullable<decimal> _charged_amount;
 		
@@ -2353,7 +2353,7 @@ namespace Orders
     partial void Ontracking_idChanged();
     partial void Ondownload_statusChanging(string value);
     partial void Ondownload_statusChanged();
-    partial void Ongoogle_order_numberChanging(long value);
+    partial void Ongoogle_order_numberChanging(System.Nullable<long> value);
     partial void Ongoogle_order_numberChanged();
     partial void Oncharged_amountChanging(System.Nullable<decimal> value);
     partial void Oncharged_amountChanged();
@@ -2825,7 +2825,7 @@ namespace Orders
 		}
 		
 		[Column(Storage="_google_order_number", DbType="BigInt NOT NULL")]
-		public long google_order_number
+		public System.Nullable<long> google_order_number
 		{
 			get
 			{
