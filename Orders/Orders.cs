@@ -8,6 +8,7 @@ using GCheckout.Checkout;
 using GCheckout.Util;
 using GCheckout.AutoGen;
 using GCheckout.OrderProcessing;
+using GCheckout.MerchantCalculation;
 
 
 namespace Orders
@@ -27,6 +28,7 @@ namespace Orders
             return description;
         }
 
+        #region Notification methods
         /// <summary>
         /// Processes the notification.
         /// </summary>
@@ -51,8 +53,10 @@ namespace Orders
                     string ShipToFirstName = N1.buyershippingaddress.contactname.Substring(0, pos);
                     string ShipToLatsName = N1.buyershippingaddress.contactname.Substring(pos + 1);
                     string UserName = N1.shoppingcart.merchantprivatedata.Any[0].InnerText;
+                    int internalOrderId = int.Parse(N1.shoppingcart.merchantprivatedata.Any[1].InnerText);
 
-                    order newOrder = new order();
+                    order newOrder = db.orders.Where(o => o.order_id == internalOrderId).Single<order>();
+
                     newOrder.google_order_number = OrderNumber1;
                     newOrder.order_date = N1.timestamp;
                     newOrder.order_by = UserName;
@@ -60,19 +64,17 @@ namespace Orders
                     newOrder.total = N1.ordertotal.Value;
                     newOrder.status = "NEW";
                     newOrder.root_id = 1;
-                    newOrder.shipping_first_name = ShipToFirstName;
-                    newOrder.shipping_last_name = ShipToLatsName;
-                    newOrder.shipping_address = N1.buyershippingaddress.address1;
-                    newOrder.shipping_city = N1.buyershippingaddress.city;
-                    newOrder.shipping_state = N1.buyershippingaddress.region;
-                    newOrder.shipping_zip = N1.buyershippingaddress.postalcode;
-                    newOrder.shipping_country = N1.buyerbillingaddress.countrycode;
+                    //newOrder.shipping_first_name = ShipToFirstName;
+                    //newOrder.shipping_last_name = ShipToLatsName;
+                    //newOrder.shipping_address = N1.buyershippingaddress.address1;
+                    //newOrder.shipping_city = N1.buyershippingaddress.city;
+                    //newOrder.shipping_state = N1.buyershippingaddress.region;
+                    //newOrder.shipping_zip = N1.buyershippingaddress.postalcode;
+                    //newOrder.shipping_country = N1.buyerbillingaddress.countrycode;
 
-                    db.orders.InsertOnSubmit(newOrder);
+                    db.orders.DeleteAllOnSubmit(db.orders.Where(o => (o.status == "TEMP" && o.order_by == UserName && o.order_id != internalOrderId)));
                     db.SubmitChanges();
-
-                    int orderId = (from o in db.orders where o.google_order_number == OrderNumber1 select o.order_id).Single<int>();
-
+                    
                     foreach (Item ThisItem in N1.shoppingcart.items)
                     {
                         int itemId = int.Parse(ThisItem.merchantprivateitemdata.Any[0].InnerText);
@@ -82,10 +84,10 @@ namespace Orders
                         bool tangible = false;
                         if (ThisItem.digitalcontent != null)
                             tangible = true;
-                        
+
                         order_item newItem = new order_item();
                         newItem.item_id = itemId;
-                        newItem.order_id = orderId;
+                        newItem.order_id = internalOrderId;
                         newItem.price = price;
                         newItem.qty = quantity;
                         newItem.tangible = tangible;
@@ -141,7 +143,7 @@ namespace Orders
 
                     break;
 
-                case "order-state-change-notification":                    
+                case "order-state-change-notification":
                     OrderStateChangeNotification N3 = (OrderStateChangeNotification)EncodeHelper.Deserialize(requestedXml, typeof(OrderStateChangeNotification));
                     // The order has changed either financial or fulfillment state in Google's system.
                     SerialNumber = N3.serialnumber;
@@ -150,7 +152,7 @@ namespace Orders
                     string newFulfillmentState = N3.newfulfillmentorderstate.ToString();
                     string prevFinanceState = N3.previousfinancialorderstate.ToString();
                     string prevFulfillmentState = N3.previousfulfillmentorderstate.ToString();
-                    
+
                     order thisOrder1 = (from or in db.orders where or.google_order_number == googleOrderNumber1 select or).Single<order>();
                     if (newFinanceState == "CHARGEABLE")
                     {
@@ -205,11 +207,16 @@ namespace Orders
                 default:
                     break;
 
-            }
+            } 
+        
             strReader.Close();
             strReader.Dispose();
             return SerialNumber;
         }
+
+        #endregion
+
+        #region OrderProcessing methods
 
         /// <summary>
         /// Gets all orders.
@@ -305,6 +312,22 @@ namespace Orders
             archiveOrder.root_id = 999;
             db.SubmitChanges();
         }
+
+        /// <summary>
+        /// Deletes the order.
+        /// </summary>
+        /// <param name="orderId">The order id.</param>
+        public static void DeleteOrder(int orderId)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            order deleteOrder = db.orders.Where(o => o.order_id == orderId).Single<order>();
+            db.orders.DeleteOnSubmit(deleteOrder);
+            db.SubmitChanges();
+        }
+
+        #endregion
+
+
     }
 
 }

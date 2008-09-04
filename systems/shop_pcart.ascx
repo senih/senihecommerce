@@ -255,7 +255,7 @@
         oCommand.Parameters.Add("@order_by", SqlDbType.NVarChar, 50).Value = Me.UserName
         oCommand.Parameters.Add("@sub_total", SqlDbType.Money).Value = GetSubTotal()
         oCommand.Parameters.Add("@total", SqlDbType.Money).Value = GetSubTotal() + GetShipping() + GetTax()
-        oCommand.Parameters.Add("@status", SqlDbType.NVarChar, 50).Value = "WAITING_FOR_PAYMENT"
+        oCommand.Parameters.Add("@status", SqlDbType.NVarChar, 50).Value = "TEMP"
         oCommand.Parameters.Add("@shipping", SqlDbType.Money).Value = GetShipping()
         oCommand.Parameters.Add("@tax", SqlDbType.Money).Value = GetTax()
         oCommand.Parameters.Add("@root_id", SqlDbType.Int).Value = Me.RootID
@@ -854,6 +854,10 @@
             dtCart = Session("Cart")
             Dim shipping As Decimal = GetShipping()
             Dim tax As Decimal = GetTax()
+            Dim orderId As Integer = SaveOrder()
+            If bUseShipping Then
+                SaveShipping(orderId)
+            End If
             For Each drCart In dtCart.Rows
                 Dim xmlDoc1 As XmlDocument = New XmlDocument()
                 Dim xmlNode1 As XmlNode = xmlDoc1.CreateElement("item-id")
@@ -861,25 +865,26 @@
                 Dim description As String = Orders.Orders.GetItemDescription(drCart("item_id"))
                 Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), xmlNode1)
             Next
-            If bUseShipping Then
-                Req.AddItem("Shipping", "Cost for shipping", shipping, 1)
-            End If
-            If tax <> 0 Then
-                Req.AddItem("Tax", "Cost for tax", tax, 1)
-            End If
+            'If bUseShipping Then
+            '    Req.MerchantCalculationsUrl = Server.MapPath("~/OrdersProcessing/callback.aspx")
+            '    Req.AddMerchantCalculatedShippingMethod("Shipping", 100)
+            '    Req.MerchantCalculatedTax = True
+            'End If
+            Req.MerchantPrivateData = orderId
             Dim xmlDoc2 As XmlDocument = New XmlDocument
             Dim xmlNode2 As XmlNode = xmlDoc2.CreateElement("user-name")
+            Dim xmlNode3 As XmlNode = xmlDoc2.CreateElement("order-id")
             xmlNode2.InnerText = Me.UserName
+            xmlNode3.InnerText = orderId
             Req.AddMerchantPrivateDataNode(xmlNode2)
             Req.ContinueShoppingUrl = "http://localhost/teststore/products.aspx"
             Req.EditCartUrl = "http://localhost/teststore/shop_pcart.aspx"
             Dim Resp As GCheckoutResponse = Req.Send()
-            If Req.Send.IsGood Then
-                Dim orderId As Integer = SaveOrder()
-                If bUseShipping Then
-                    SaveShipping(orderId)
-                End If
+            If Resp.IsGood Then
                 Response.Redirect(Resp.RedirectUrl, True)
+            Else
+                ResponseLabel.Text = Resp.ErrorMessage
+                Orders.Orders.DeleteOrder(orderId)
             End If
         Else
             Session("Cart") = Nothing
@@ -1392,7 +1397,7 @@
                 <asp:Label ID="lblTotalLabel" meta:resourcekey="lblTotalLabel" runat="server" Font-Bold="true" Text="Total"></asp:Label>
                 </td>
                 <td>:&nbsp;</td>
-                <td>            
+                <td style="text-align:right">            
                 <asp:Label ID="lblTotal" runat="server" Font-Bold="true" Text=""></asp:Label>
                 </td>
             </tr>
@@ -1423,6 +1428,7 @@
             </tr>
             <tr>
                 <td colspan="3" style="text-align:right">
+                    <asp:Label ID="ResponseLabel" runat="server"></asp:Label>
                     <cc1:GCheckoutButton ID="GCheckoutButton1" runat="server" 
                         Background="Transparent" CartExpirationMinutes="30" Currency="USD" 
                         Height="46px"
