@@ -23,7 +23,7 @@ namespace Orders
         /// <returns>Description of the item wich is the summery of the page</returns>
         public static string GetItemDescription(int item_id)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             string description = (from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary).Single<string>();
             return description;
         }
@@ -36,7 +36,7 @@ namespace Orders
         /// <returns>Serial number of the notification</returns>
         public static string ProcessNotification(string xmlFile)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             string SerialNumber = "";
             //Read XML file
             StreamReader strReader = new StreamReader(xmlFile);
@@ -53,7 +53,7 @@ namespace Orders
                     string ShipToFirstName = N1.buyershippingaddress.contactname.Substring(0, pos);
                     string ShipToLatsName = N1.buyershippingaddress.contactname.Substring(pos + 1);
                     string UserName = N1.shoppingcart.merchantprivatedata.Any[0].InnerText;
-                    int internalOrderId = int.Parse(N1.shoppingcart.merchantprivatedata.Any[1].InnerText);
+                    int internalOrderId = int.Parse(EncodeHelper.GetElementValue(requestedXml, "MERCHANT_DATA_HIDDEN"));
 
                     order newOrder = db.orders.Where(o => o.order_id == internalOrderId).Single<order>();
 
@@ -72,7 +72,7 @@ namespace Orders
                     //newOrder.shipping_zip = N1.buyershippingaddress.postalcode;
                     //newOrder.shipping_country = N1.buyerbillingaddress.countrycode;
 
-                    db.orders.DeleteAllOnSubmit(db.orders.Where(o => (o.status == "TEMP" && o.order_by == UserName && o.order_id != internalOrderId)));
+                    db.orders.DeleteAllOnSubmit(db.orders.Where(o => (o.status == "TEMP" && o.order_by == UserName)));
                     db.SubmitChanges();
                     
                     foreach (Item ThisItem in N1.shoppingcart.items)
@@ -154,11 +154,11 @@ namespace Orders
                     string prevFulfillmentState = N3.previousfulfillmentorderstate.ToString();
 
                     order thisOrder1 = (from or in db.orders where or.google_order_number == googleOrderNumber1 select or).Single<order>();
-                    if (newFinanceState == "CHARGEABLE")
-                    {
-                        GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(N3.googleordernumber);
-                        chargeReq.Send();
-                    }
+                    //if (newFinanceState == "CHARGEABLE")
+                    //{
+                    //    GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(N3.googleordernumber);
+                    //    chargeReq.Send();
+                    //}
                     thisOrder1.status = newFinanceState;
                     thisOrder1.shipping_status = newFulfillmentState;
                     db.SubmitChanges();
@@ -225,7 +225,7 @@ namespace Orders
         public static List<order> GetAllOrders()
         {
 
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order> listOfAllOrderes = (from or in db.orders 
                                             where or.root_id != 999
                                             select or).ToList<order>();
@@ -244,7 +244,7 @@ namespace Orders
         /// <returns>List of search results</returns>
         public static List<order> GetOrders(string payment, string shipment, long orderNumber, DateTime fromDate, DateTime toDate)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order> listOfOrders;
 
 
@@ -263,7 +263,7 @@ namespace Orders
         /// <returns>Details for the order</returns>
         public static List<order> GetOrderDetails(long googleOrderNumber)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order> orderDetails = (from or in db.orders
                                         where or.google_order_number == googleOrderNumber
                                         select or).ToList<order>();
@@ -277,7 +277,7 @@ namespace Orders
         /// <returns>Items from order with given orderID</returns>
         public static List<order_item> GetItems(int orderId)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order_item> itemsDetails = (from i in db.order_items
                                              where i.order_id == orderId
                                              select i).ToList<order_item>();
@@ -291,7 +291,7 @@ namespace Orders
         /// <returns>Customer details</returns>
         public static List<customer> GetCustomerDetails(long googleOrderNumber)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<customer> customerDetails = (from c in db.customers
                                               where c.google_order_number == googleOrderNumber
                                               select c).ToList<customer>();
@@ -305,7 +305,7 @@ namespace Orders
         public static void ArchiveOrder(string orderNumber)
         {
             long googleOrderNumber = Int64.Parse(orderNumber);
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             order archiveOrder = (from or in db.orders
                                         where or.google_order_number == googleOrderNumber
                                         select or).Single<order>();
@@ -319,7 +319,7 @@ namespace Orders
         /// <param name="orderId">The order id.</param>
         public static void DeleteOrder(int orderId)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             order deleteOrder = db.orders.Where(o => o.order_id == orderId).Single<order>();
             db.orders.DeleteOnSubmit(deleteOrder);
             db.SubmitChanges();

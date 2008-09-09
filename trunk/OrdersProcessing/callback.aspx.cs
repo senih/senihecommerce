@@ -19,6 +19,7 @@ public partial class OrdersProcessing_callback : System.Web.UI.Page
             Log.Debug("Request XML: " + RequestXml);
 
             // Process the incoming XML.
+            //string orderId = EncodeHelper.GetElementValue(RequestXml, "MERCHANT_DATA_HIDDEN");
             CallbackProcessor P = new CallbackProcessor(new Orders.Callback());
             byte[] ResponseXML = P.Process(RequestXml);
 
