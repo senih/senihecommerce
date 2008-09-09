@@ -9,9 +9,18 @@ namespace Orders
 {
     public class Callback : CallbackRules
     {
+        string orderId;
+
+        public Callback(){}
+
+        public Callback(string id)
+        {
+            orderId = id;
+        }
+
         public override ShippingResult GetShippingResult(string ShipMethodName, Order ThisOrder, AnonymousAddress Address)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             ShippingResult result = new ShippingResult();
             int orderNumber = int.Parse(ThisOrder.MerchantPrivateData);
 
@@ -25,7 +34,7 @@ namespace Orders
 
         public override decimal GetTaxResult(Order ThisOrder, AnonymousAddress Address, decimal ShippingRate)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             int orderNumber = int.Parse(ThisOrder.MerchantPrivateData);
             string tax = (from o in db.orders
                           where o.order_id == orderNumber

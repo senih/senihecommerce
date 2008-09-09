@@ -865,11 +865,12 @@
                 Dim description As String = Orders.Orders.GetItemDescription(drCart("item_id"))
                 Req.AddItem(drCart("item_desc"), description, drCart("current_price"), drCart("qty"), xmlNode1)
             Next
-            'If bUseShipping Then
-            '    Req.MerchantCalculationsUrl = Server.MapPath("~/OrdersProcessing/callback.aspx")
-            '    Req.AddMerchantCalculatedShippingMethod("Shipping", 100)
-            '    Req.MerchantCalculatedTax = True
-            'End If
+            If bUseShipping Then
+                Req.MerchantCalculationsUrl = "http://98.130.133.37/OrdersProcessing/callback.aspx"
+                Req.AddMerchantCalculatedShippingMethod("Shipping", shipping)
+                Req.MerchantCalculatedTax = True
+                Req.AddWorldAreaTaxRule(0.18, True)
+            End If
             Req.MerchantPrivateData = orderId
             Dim xmlDoc2 As XmlDocument = New XmlDocument
             Dim xmlNode2 As XmlNode = xmlDoc2.CreateElement("user-name")
@@ -877,8 +878,8 @@
             xmlNode2.InnerText = Me.UserName
             xmlNode3.InnerText = orderId
             Req.AddMerchantPrivateDataNode(xmlNode2)
-            Req.ContinueShoppingUrl = "http://localhost/teststore/products.aspx"
-            Req.EditCartUrl = "http://localhost/teststore/shop_pcart.aspx"
+            Req.ContinueShoppingUrl = "http://98.130.133.37/products.aspx"
+            Req.EditCartUrl = "http://98.130.133.37/shop_pcart.aspx"
             Dim Resp As GCheckoutResponse = Req.Send()
             If Resp.IsGood Then
                 Response.Redirect(Resp.RedirectUrl, True)
