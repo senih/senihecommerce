@@ -52,7 +52,7 @@ namespace Orders
                     int pos = N1.buyershippingaddress.contactname.IndexOf(" ");
                     string ShipToFirstName = N1.buyershippingaddress.contactname.Substring(0, pos);
                     string ShipToLatsName = N1.buyershippingaddress.contactname.Substring(pos + 1);
-                    string UserName = N1.shoppingcart.merchantprivatedata.Any[0].InnerText;
+                    string UserName = N1.shoppingcart.merchantprivatedata.Any[1].InnerText;
                     int internalOrderId = int.Parse(EncodeHelper.GetElementValue(requestedXml, "MERCHANT_DATA_HIDDEN"));
 
                     order newOrder = db.orders.Where(o => o.order_id == internalOrderId).Single<order>();
@@ -72,6 +72,7 @@ namespace Orders
                     //newOrder.shipping_zip = N1.buyershippingaddress.postalcode;
                     //newOrder.shipping_country = N1.buyerbillingaddress.countrycode;
 
+                    db.SubmitChanges();
                     db.orders.DeleteAllOnSubmit(db.orders.Where(o => (o.status == "TEMP" && o.order_by == UserName)));
                     db.SubmitChanges();
                     
@@ -160,7 +161,10 @@ namespace Orders
                     //    chargeReq.Send();
                     //}
                     thisOrder1.status = newFinanceState;
-                    thisOrder1.shipping_status = newFulfillmentState;
+                    if (newFulfillmentState == "WILL_NOT_DELIVER")
+                        thisOrder1.shipping_status = "CANCELLED";
+                    else
+                        thisOrder1.shipping_status = newFulfillmentState;
                     db.SubmitChanges();
                     break;
 
@@ -224,7 +228,6 @@ namespace Orders
         /// <returns>List of all orders</returns>
         public static List<order> GetAllOrders()
         {
-
             StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order> listOfAllOrderes = (from or in db.orders 
                                             where or.root_id != 999
@@ -232,6 +235,18 @@ namespace Orders
             return listOfAllOrderes;
         }
 
+        /// <summary>
+        /// Gets the archived orders.
+        /// </summary>
+        /// <returns>List of archived orders</returns>
+        public static List<order> GetArchivedOrders()
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            List<order> listOfArchivedOrders = (from or in db.orders
+                                                where or.root_id == 999
+                                                select or).ToList<order>();
+            return listOfArchivedOrders;
+        }
 
         /// <summary>
         /// Gets the orders.
@@ -249,7 +264,31 @@ namespace Orders
 
 
             listOfOrders = (from or in db.orders
-                            where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (orderNumber==0 || or.google_order_number == orderNumber) && (or.order_date >= fromDate && or.order_date <= toDate)
+                            where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (orderNumber==0 || or.google_order_number == orderNumber) && (or.order_date >= fromDate && or.order_date <= toDate) && (or.root_id != 999)
+                            orderby or.order_date descending
+                            select or).ToList<order>();
+
+            return listOfOrders;
+        }
+
+
+        /// <summary>
+        /// Gets the archives.
+        /// </summary>
+        /// <param name="payment">The payment.</param>
+        /// <param name="shipment">The shipment.</param>
+        /// <param name="orderNumber">The order number.</param>
+        /// <param name="fromDate">From date.</param>
+        /// <param name="toDate">To date.</param>
+        /// <returns>List of archives</returns>
+        public static List<order> GetArchives(string payment, string shipment, long orderNumber, DateTime fromDate, DateTime toDate)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            List<order> listOfOrders;
+
+
+            listOfOrders = (from or in db.orders
+                            where (or.status == payment || payment == "") && (or.shipping_status == shipment || shipment == "") && (orderNumber == 0 || or.google_order_number == orderNumber) && (or.order_date >= fromDate && or.order_date <= toDate) && (or.root_id == 999)
                             orderby or.order_date descending
                             select or).ToList<order>();
 
@@ -310,6 +349,17 @@ namespace Orders
                                         where or.google_order_number == googleOrderNumber
                                         select or).Single<order>();
             archiveOrder.root_id = 999;
+            db.SubmitChanges();
+        }
+
+        public static void UnarchiveOrder(string orderNumber)
+        {
+            long googleOrderNumber = Int64.Parse(orderNumber);
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            order unarchiveOrder = (from or in db.orders
+                                  where or.google_order_number == googleOrderNumber
+                                  select or).Single<order>();
+            unarchiveOrder.root_id = 1;
             db.SubmitChanges();
         }
 

@@ -867,9 +867,9 @@
             Next
             If bUseShipping Then
                 Req.MerchantCalculationsUrl = "http://98.130.133.37/OrdersProcessing/callback.aspx"
-                Req.AddMerchantCalculatedShippingMethod("Shipping", shipping)
+                Req.AddMerchantCalculatedShippingMethod("Shipping", 1)
                 Req.MerchantCalculatedTax = True
-                Req.AddWorldAreaTaxRule(0.18, True)
+                Req.AddWorldAreaTaxRule(1, True)
             End If
             Req.MerchantPrivateData = orderId
             Dim xmlDoc2 As XmlDocument = New XmlDocument

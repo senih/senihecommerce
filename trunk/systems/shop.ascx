@@ -25,6 +25,7 @@
                 lnkTaxes.NavigateUrl = "~/" & Me.LinkShopTaxes
                 lnkCoupons.NavigateUrl = "~/" & Me.LinkShopCoupons
                 lnkOrderReport.NavigateUrl = "~/" & Me.LinkShopOrders
+                lnkArchives.NavigateUrl = "~/" & Me.LinkShopArchives
                 
                 idProductTypes.Visible = False
                 idLookup.Visible = False
@@ -72,6 +73,9 @@
     </td>
     <td style="padding-left:0px;padding-right:15px">
         <asp:HyperLink ID="lnkOrderReport" meta:resourcekey="lnkOrderReport" runat="server" Text="Orders"></asp:HyperLink>
+    </td>
+        <td style="padding-left:0px;padding-right:15px">
+        <asp:HyperLink ID="lnkArchives" runat="server" Text="Archives"></asp:HyperLink>
     </td>
     </tr>
     </table>
