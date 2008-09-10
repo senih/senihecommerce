@@ -439,6 +439,16 @@ Public Class BaseUserControl
         End Set
     End Property
 
+    Private sLinkShopArchives As String = "shop_archives.aspx"
+    Public Property LinkShopArchives() As String
+        Get
+            Return sLinkShopArchives
+        End Get
+        Set(ByVal value As String)
+            sLinkShopArchives = value
+        End Set
+    End Property
+
     Private sAdmin As String = "admin.aspx"
     Public Property LinkAdmin() As String
         Get

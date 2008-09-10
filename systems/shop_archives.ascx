@@ -1,7 +1,5 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="shop_orders.ascx.cs" Inherits="systems_shop_orders" %>
-
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeFile="shop_archives.ascx.cs" Inherits="systems_shop_archives" %>
 <%@ Register assembly="EclipseWebSolutions.DatePicker" namespace="EclipseWebSolutions.DatePicker" tagprefix="cc1" %>
-
 
 <asp:LoginView ID="LoginView" runat="server">
     <RoleGroups>
@@ -163,7 +161,7 @@
                                         <asp:Button ID="CancelButton" runat="server" onclick="CancelButton_Click" 
                                             Text="Cancel order" />
                                         &nbsp;<asp:Button ID="ArchiveButton" runat="server" onclick="ArchiveButton_Click" 
-                                            Text="Archive order" />
+                                            Text="Unarchive order" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -172,20 +170,7 @@
                                         <asp:Label ID="FinancialLabel" runat="server"></asp:Label>
                                     </td>
                                     <td align="right" bgcolor="Silver">
-                                        <asp:Panel ID="ChargingPanel" runat="server">
-                                            <asp:Button ID="ChargeButton" runat="server" onclick="ChargeButton_Click" 
-                                                Text="Charge order" />
-                                            <asp:LinkButton ID="PartialChargingButton" runat="server" 
-                                                onclick="PartialChargingButton_Click">Partial charging</asp:LinkButton>
-                                        </asp:Panel>
-                                        <asp:Panel ID="PartialChargingPanel" runat="server">
-                                            <asp:TextBox ID="PartialAmountTextBox" runat="server"></asp:TextBox>
-                                            <asp:Button ID="ChargePartialButton" runat="server" 
-                                                onclick="ChargePartialButton_Click" Text="Charge" />
-                                            <asp:LinkButton ID="CancelPartialChargingButton" runat="server" 
-                                                onclick="CancelPartialChargingButton_Click">Cancel</asp:LinkButton>
-                                        </asp:Panel>
-                                    </td>
+                                        &nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td bgcolor="Silver">                                        
@@ -193,78 +178,12 @@
                                         <asp:Label ID="FulfillmentLabel" runat="server"></asp:Label>
                                     </td>
                                     <td align="right" bgcolor="Silver">
-                                        <asp:LinkButton ID="RefundPanelButton" runat="server" 
-                                            onclick="RefundPanelButton_Click">Refund</asp:LinkButton>
                                         &nbsp;
-                                        <asp:LinkButton ID="ShipPanelButton" runat="server" 
-                                            onclick="ShipPanelButton_Click">Ship</asp:LinkButton>
-                                    </td>
+                                        </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">
-                                        <asp:Panel ID="RefundPanel" runat="server">
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        Comments:</td>
-                                                    <td>
-                                                        <asp:TextBox ID="RefundCommentTextBox" runat="server" TextMode="MultiLine"></asp:TextBox>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        Refund amount:</td>
-                                                    <td>
-                                                        <asp:TextBox ID="RefundTextBox" runat="server"></asp:TextBox>
-                                                        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" 
-                                                            ControlToValidate="RefundTextBox" ErrorMessage="*"></asp:RequiredFieldValidator>
-                                                        <asp:RangeValidator ID="RangeValidator" runat="server" 
-                                                            ControlToValidate="RefundTextBox" ErrorMessage="*" Type="Double"></asp:RangeValidator>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <asp:Label ID="RefundStatusLabel" runat="server" ForeColor="Red"></asp:Label>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <asp:Button ID="RefundButton" runat="server" onclick="RefundButton_Click" 
-                                                            Text="Process refund" />
-                                                        &nbsp;<asp:Button ID="CancelRefundButton" runat="server" CausesValidation="False" 
-                                                            onclick="CancelRefundButton_Click" Text="Cancel" />
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </asp:Panel>
-                                        <asp:Panel ID="ShippingPanel" runat="server">
-                                            <table>
-                                                <tr>
-                                                    <td align="right">
-                                                        Carrier:</td>
-                                                    <td>
-                                                        <asp:TextBox ID="CarrierTextBox" runat="server"></asp:TextBox>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align="right">
-                                                        Tracking #:</td>
-                                                    <td>
-                                                        <asp:TextBox ID="TrackingNumberTextBox" runat="server"></asp:TextBox>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <asp:Button ID="SendShippingInfoButton" runat="server" 
-                                                            onclick="SendShippingInfoButton_Click" Text="Send shipping info" />
-                                                        &nbsp;<asp:Button ID="CancelSendingShippingInfoButton" runat="server" 
-                                                            CausesValidation="False" onclick="CancelSendingShippingInfoButton_Click" 
-                                                            Text="Cancel" />
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </asp:Panel>
-                                    </td>
+                                        &nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">
