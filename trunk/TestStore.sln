@@ -5,20 +5,20 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TestStore", ".", "{BD484C12
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFramework = "3.5"
 		Debug.AspNetCompiler.VirtualPath = "/TestStore"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\Webs\TestStore\"
+		Debug.AspNetCompiler.PhysicalPath = "..\TestStore\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\TestStore\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/TestStore"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\Webs\TestStore\"
+		Release.AspNetCompiler.PhysicalPath = "..\TestStore\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\TestStore\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "4636"
+		VWDPort = "2773"
 		VWDDynamicPort = "true"
 	EndProjectSection
 EndProject

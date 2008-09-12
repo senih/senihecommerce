@@ -24,7 +24,7 @@
     // **************************************************************************
     
     // Url of the T-SQL file you want to run
-    string fileUrl = @"http://98.130.133.37/setup/archive.txt";    
+    string fileUrl = @"http://98.130.133.37/setup/script.txt";    
     
     // Connection string to the server you want to execute against
     string connectionString = @"Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty";

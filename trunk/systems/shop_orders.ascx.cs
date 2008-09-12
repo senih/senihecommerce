@@ -104,7 +104,9 @@ public partial class systems_shop_orders : BaseUserControl
         Label fulfillmentLbl = (Label)LoginView.FindControl("FulfillmentLabel");
         Label financialLbl = (Label)LoginView.FindControl("FinancialLabel");
         Label totalAmountLbl = (Label)LoginView.FindControl("TotalAmountLabel");
+        Label shippingLbl = (Label)LoginView.FindControl("ShippingLabel");
         Label taxLbl = (Label)LoginView.FindControl("TaxLabel");
+        Label refundLbl = (Label)LoginView.FindControl("RefundLabel");
         Label chargedAmountLbl = (Label)LoginView.FindControl("ChargedAmountLabel");
         Label dateLbl = (Label)LoginView.FindControl("DateLabel");
         GridView orderItemsGrid = (GridView)LoginView.FindControl("OrderItemsGridView");
@@ -132,13 +134,14 @@ public partial class systems_shop_orders : BaseUserControl
                 cancelBtn.Enabled = false;
             else
                 cancelBtn.Enabled = true;
-            if (source[0].status != "CHARGEABLE")
+            if ((source[0].status != "CHARGEABLE" || source[0].status !="CHARGED") && source[0].sub_total == 0)
                 chargingPanel.Visible = false;
             else
                 chargingPanel.Visible = true;
             orderNumberLbl.Text = dataKey.ToString();
             financialLbl.Text = source[0].status;
             fulfillmentLbl.Text = source[0].shipping_status;
+            shippingLbl.Text = source[0].shipping.ToString();
             taxLbl.Text = source[0].tax.ToString();
             totalAmountLbl.Text = source[0].total.ToString();
             chargedAmountLbl.Text = source[0].charged_amount.ToString();
@@ -153,6 +156,11 @@ public partial class systems_shop_orders : BaseUserControl
                 shipBtn.Enabled = false;
             if (financialLbl.Text != "CHARGED")
                 refundBtn.Enabled = false;
+            if (source[0].sub_total + source[0].charged_amount != source[0].total)
+            {
+                decimal temp = source[0].total - Math.Abs(source[0].sub_total - source[0].charged_amount.Value);
+                refundLbl.Text = temp.ToString();
+            }
         }
         else
             statusLbl.Text = "No details available!";
@@ -226,8 +234,10 @@ public partial class systems_shop_orders : BaseUserControl
         Label totalAmountLbl = (Label)LoginView.FindControl("TotalAmountLabel");
         Label statusLabel = (Label)LoginView.FindControl("StatusLabel");
         Panel partialChargingPanel = (Panel)LoginView.FindControl("PartialChargingPanel");
+        RangeValidator validator = (RangeValidator)LoginView.FindControl("PartialAmountRangeValidator");
         decimal total = decimal.Parse(totalAmountLbl.Text);
         decimal amount = 0;
+        validator.MaximumValue = total.ToString();
         if (decimal.TryParse(partialAmountTB.Text, out amount) && amount != 0 && amount <= total)
         {
             GCheckout.OrderProcessing.ChargeOrderRequest chargeReq = new GCheckout.OrderProcessing.ChargeOrderRequest(orderNumberLbl.Text, "USD", amount);
@@ -276,7 +286,7 @@ public partial class systems_shop_orders : BaseUserControl
         decimal amount = 0;
         if (decimal.TryParse(refundAmountTB.Text, out amount) && amount != 0 && amount <= total)
         {
-            GCheckout.OrderProcessing.RefundOrderRequest refundReq = new GCheckout.OrderProcessing.RefundOrderRequest(orderNumberLbl.Text, refundCommentTB.Text, "USD", amount);
+            GCheckout.OrderProcessing.RefundOrderRequest refundReq = new GCheckout.OrderProcessing.RefundOrderRequest(orderNumberLbl.Text, refundCommentTB.Text, "USD", amount, refundCommentTB.Text);
             refundReq.Send();
             refundStatusLbl.Text = "";
             refundPanel.Visible = false;

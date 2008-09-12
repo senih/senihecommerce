@@ -29,6 +29,7 @@ namespace Orders
         }
 
         #region Notification methods
+
         /// <summary>
         /// Processes the notification.
         /// </summary>
@@ -60,8 +61,9 @@ namespace Orders
                     newOrder.google_order_number = OrderNumber1;
                     newOrder.order_date = N1.timestamp;
                     newOrder.order_by = UserName;
-                    newOrder.sub_total = 0;
+                    newOrder.sub_total = N1.ordertotal.Value;
                     newOrder.total = N1.ordertotal.Value;
+                    newOrder.charged_amount = 0;
                     newOrder.status = "NEW";
                     newOrder.root_id = 1;
                     //newOrder.shipping_first_name = ShipToFirstName;
@@ -176,7 +178,8 @@ namespace Orders
                     decimal chargedAmount = N4.latestchargeamount.Value;
 
                     order thisOrder2 = (from or in db.orders where or.google_order_number == googleOrderNumber2 select or).Single<order>();
-                    thisOrder2.charged_amount = chargedAmount;
+                    thisOrder2.charged_amount += chargedAmount;
+                    thisOrder2.sub_total -= chargedAmount;
                     db.SubmitChanges();
 
                     break;
@@ -230,7 +233,7 @@ namespace Orders
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order> listOfAllOrderes = (from or in db.orders 
-                                            where or.root_id != 999
+                                            where or.root_id != 999 && or.status != "TEMP"
                                             select or).ToList<order>();
             return listOfAllOrderes;
         }
@@ -373,6 +376,28 @@ namespace Orders
             order deleteOrder = db.orders.Where(o => o.order_id == orderId).Single<order>();
             db.orders.DeleteOnSubmit(deleteOrder);
             db.SubmitChanges();
+        }
+
+        /// <summary>
+        /// Gets all customers.
+        /// </summary>
+        /// <returns>List of all customers</returns>
+        public static List<customer> GetAllCustomers()
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            List<customer> list = db.customers.ToList<customer>();
+            return list;
+        }
+
+        /// <summary>
+        /// Gets all order items.
+        /// </summary>
+        /// <returns>List of all ordered items</returns>
+        public static List<order_item> GetAllOrderItems()
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            List<order_item> list = db.order_items.ToList<order_item>();
+            return list;
         }
 
         #endregion

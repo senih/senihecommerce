@@ -18,6 +18,13 @@ namespace Orders
             orderId = id;
         }
 
+        /// <summary>
+        /// Gets the shipping result.
+        /// </summary>
+        /// <param name="ShipMethodName">Name of the ship method.</param>
+        /// <param name="ThisOrder">The this order.</param>
+        /// <param name="Address">The address.</param>
+        /// <returns>ShippingResult object</returns>
         public override ShippingResult GetShippingResult(string ShipMethodName, Order ThisOrder, AnonymousAddress Address)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
@@ -32,6 +39,13 @@ namespace Orders
             return result;
         }
 
+        /// <summary>
+        /// Gets the tax result.
+        /// </summary>
+        /// <param name="ThisOrder">The this order.</param>
+        /// <param name="Address">The address.</param>
+        /// <param name="ShippingRate">The shipping rate.</param>
+        /// <returns>Tax result as decimal value</returns>
         public override decimal GetTaxResult(Order ThisOrder, AnonymousAddress Address, decimal ShippingRate)
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
