@@ -179,6 +179,10 @@
                                                 onclick="PartialChargingButton_Click">Partial charging</asp:LinkButton>
                                         </asp:Panel>
                                         <asp:Panel ID="PartialChargingPanel" runat="server">
+                                            <asp:RangeValidator ID="PartialAmountRangeValidator" runat="server" 
+                                                ControlToValidate="PartialAmountTextBox" ErrorMessage="*" Type="Double"></asp:RangeValidator>
+                                            <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" 
+                                                ControlToValidate="PartialAmountTextBox" ErrorMessage="*"></asp:RequiredFieldValidator>
                                             <asp:TextBox ID="PartialAmountTextBox" runat="server"></asp:TextBox>
                                             <asp:Button ID="ChargePartialButton" runat="server" 
                                                 onclick="ChargePartialButton_Click" Text="Charge" />
@@ -272,7 +276,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="2">
-                                        <asp:GridView ID="OrderItemsGridView" runat="server" 
+                                        <asp:GridView Width="100%" ID="OrderItemsGridView" runat="server" 
                                             AutoGenerateColumns="false">
                                             <Columns>
                                                 <asp:BoundField DataField="item_name" HeaderText="Item name" />
@@ -285,6 +289,12 @@
                                 </tr>
                                 <tr>
                                     <td align="right" bgcolor="Silver" colspan="2">
+                                        Shipping:
+                                        <asp:Label ID="ShippingLabel" runat="server"></asp:Label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" bgcolor="Silver" colspan="2">
                                         Tax:
                                         <asp:Label ID="TaxLabel" runat="server"></asp:Label>
                                     </td>
@@ -293,6 +303,14 @@
                                     <td align="right" bgcolor="Silver" colspan="2">
                                         Total amount:
                                         <asp:Label ID="TotalAmountLabel" runat="server" Font-Bold="True"></asp:Label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right" bgcolor="Silver" colspan="2">
+                                        <span class="Apple-style-span" 
+                                            style="border-collapse: separate; color: rgb(0, 0, 0); font-family: Arial; font-size: 13px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-right; text-indent: 0px; text-transform: none; white-space: nowrap; widows: 2; word-spacing: 0px; -webkit-border-horizontal-spacing: 0px; -webkit-border-vertical-spacing: 0px; -webkit-text-decorations-in-effect: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0; ">
+                                        Refunds: </span>
+                                        <asp:Label ID="RefundLabel" runat="server"></asp:Label>
                                     </td>
                                 </tr>
                                 <tr>
