@@ -10,7 +10,7 @@ public partial class setup_orders : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        List<order> source = Orders.Orders.GetAllOrders();
+        List<order> source = Orders.Orders.GetALL();
         GridView1.DataSource = source;
         GridView1.DataBind();
 

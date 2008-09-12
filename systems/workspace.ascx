@@ -27,6 +27,8 @@
         lnkShop2.NavigateUrl = "~/" & Me.LinkWorkspaceShop
         lnkCustomListing.NavigateUrl = "~/" & Me.LinkCustomListing
         lnkCustomListing2.NavigateUrl = "~/" & Me.LinkCustomListing
+        lnkOrders.NavigateUrl = "~/" & Me.LinkWorkspaceOrders
+        lnkOrders2.NavigateUrl = "~/" & Me.LinkWorkspaceOrders
                 
         If Not IsNothing(GetUser) Then
 
@@ -252,6 +254,24 @@
         </div>
     </td>
 </tr>
+    <tr ID="idOrders" runat="server">
+        <td style="padding-bottom:5px">
+            <asp:HyperLink ID="lnkOrders2" runat="server" Font-Underline="False">
+                <asp:Image ID="imgOrders" meta:resourcekey="imgOrders" ImageUrl="images/ico_shop.gif" Width="79px" Height="79px" runat="server" />
+            </asp:HyperLink>
+        </td>
+        <td style="padding-top:9px;padding-left:20px" valign="top">
+            <div style="border-top:#aaaaaa 1px dotted;width:100%;padding-top:3px">
+                <asp:HyperLink ID="lnkOrders" runat="server" Font-Size="12px" 
+                    meta:resourcekey="lnkOrders" Text="Orders"></asp:HyperLink>
+                <div style="margin:3px">
+                </div>
+                <asp:Literal ID="litOrders" runat="server" meta:resourcekey="litOrders" Text="
+            List of orders that you made.
+            "></asp:Literal>
+            </div>
+        </td>
+    </tr>
 </table>
 
 
@@ -340,7 +360,6 @@
         </div>
     </td>
 </tr>
-<tr><td colspan="2"></td></tr>
 </table>
 
 

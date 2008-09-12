@@ -18,7 +18,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TestStore", ".", "{BD484C12
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "2773"
+		VWDPort = "3650"
 		VWDDynamicPort = "true"
 	EndProjectSection
 EndProject
