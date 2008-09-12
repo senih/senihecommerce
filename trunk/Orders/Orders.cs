@@ -390,13 +390,36 @@ namespace Orders
         }
 
         /// <summary>
-        /// Gets all order items.
+        /// Gets all order items. (for testing purpose)
         /// </summary>
         /// <returns>List of all ordered items</returns>
         public static List<order_item> GetAllOrderItems()
         {
             StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
             List<order_item> list = db.order_items.ToList<order_item>();
+            return list;
+        }
+
+        /// <summary>
+        /// Gets the ALL. (for testing purpose)
+        /// </summary>
+        /// <returns>List of all orders</returns>
+        public static List<order> GetALL()
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            List<order> list = db.orders.ToList<order>();
+            return list;
+        }
+
+        /// <summary>
+        /// Gets the orders by user.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <returns>List of orders for given user</returns>
+        public static List<order> GetOrdersByUser(string username)
+        {
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            List<order> list = db.orders.Where(o => o.order_by == username && o.status != "TEMP").ToList<order>();
             return list;
         }
 

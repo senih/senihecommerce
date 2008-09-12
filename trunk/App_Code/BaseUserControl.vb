@@ -639,6 +639,16 @@ Public Class BaseUserControl
         End Set
     End Property
 
+    Private sWorkspaceOrders As String = "orders.aspx"
+    Public Property LinkWorkspaceOrders() As String
+        Get
+            Return sWorkspaceOrders
+        End Get
+        Set(ByVal value As String)
+            sWorkspaceOrders = value
+        End Set
+    End Property
+
     Private sWorkspacePreferences As String = "preferences.aspx"
     Public Property LinkWorkspacePreferences() As String
         Get
