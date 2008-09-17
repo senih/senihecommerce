@@ -27,7 +27,8 @@ namespace Orders
         /// <returns>ShippingResult object</returns>
         public override ShippingResult GetShippingResult(string ShipMethodName, Order ThisOrder, AnonymousAddress Address)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = Orders.GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             ShippingResult result = new ShippingResult();
             int orderNumber = int.Parse(orderId);
 
@@ -48,7 +49,8 @@ namespace Orders
         /// <returns>Tax result as decimal value</returns>
         public override decimal GetTaxResult(Order ThisOrder, AnonymousAddress Address, decimal ShippingRate)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = Orders.GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             int orderNumber = int.Parse(orderId);
 
             string tax = (from o in db.orders

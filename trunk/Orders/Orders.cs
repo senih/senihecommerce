@@ -9,23 +9,23 @@ using GCheckout.Util;
 using GCheckout.AutoGen;
 using GCheckout.OrderProcessing;
 using GCheckout.MerchantCalculation;
-
+using System.Configuration;
 
 namespace Orders
 {
+    /// <summary>
+    /// The class implements notification and order processing methods
+    /// </summary>
     public static class Orders
     {
-        
         /// <summary>
-        /// Gets the item description.
+        /// Gets the connection string.
         /// </summary>
-        /// <param name="item_id">The item_id.</param>
-        /// <returns>Description of the item wich is the summery of the page</returns>
-        public static string GetItemDescription(int item_id)
+        /// <returns>Connection string</returns>
+        public static string GetConnectionString()
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
-            string description = (from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary).Single<string>();
-            return description;
+            string connection = ConfigurationSettings.AppSettings["connectionString"];
+            return connection;
         }
 
         #region Notification methods
@@ -37,7 +37,8 @@ namespace Orders
         /// <returns>Serial number of the notification</returns>
         public static string ProcessNotification(string xmlFile)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             string SerialNumber = "";
             //Read XML file
             StreamReader strReader = new StreamReader(xmlFile);
@@ -226,12 +227,26 @@ namespace Orders
         #region OrderProcessing methods
 
         /// <summary>
+        /// Gets the item description.
+        /// </summary>
+        /// <param name="item_id">The item_id.</param>
+        /// <returns>Description of the item wich is the summery of the page</returns>
+        public static string GetItemDescription(int item_id)
+        {
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
+            string description = (from p in db.pages where (p.page_id == item_id && p.status == "published") select p.summary).Single<string>();
+            return description;
+        }
+
+        /// <summary>
         /// Gets all orders.
         /// </summary>
         /// <returns>List of all orders</returns>
         public static List<order> GetAllOrders()
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> listOfAllOrderes = (from or in db.orders 
                                             where or.root_id != 999 && or.status != "TEMP"
                                             select or).ToList<order>();
@@ -244,7 +259,8 @@ namespace Orders
         /// <returns>List of archived orders</returns>
         public static List<order> GetArchivedOrders()
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> listOfArchivedOrders = (from or in db.orders
                                                 where or.root_id == 999
                                                 select or).ToList<order>();
@@ -262,7 +278,8 @@ namespace Orders
         /// <returns>List of search results</returns>
         public static List<order> GetOrders(string payment, string shipment, long orderNumber, DateTime fromDate, DateTime toDate)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> listOfOrders;
 
 
@@ -286,7 +303,8 @@ namespace Orders
         /// <returns>List of archives</returns>
         public static List<order> GetArchives(string payment, string shipment, long orderNumber, DateTime fromDate, DateTime toDate)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> listOfOrders;
 
 
@@ -305,7 +323,8 @@ namespace Orders
         /// <returns>Details for the order</returns>
         public static List<order> GetOrderDetails(long googleOrderNumber)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> orderDetails = (from or in db.orders
                                         where or.google_order_number == googleOrderNumber
                                         select or).ToList<order>();
@@ -319,7 +338,8 @@ namespace Orders
         /// <returns>Items from order with given orderID</returns>
         public static List<order_item> GetItems(int orderId)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order_item> itemsDetails = (from i in db.order_items
                                              where i.order_id == orderId
                                              select i).ToList<order_item>();
@@ -333,7 +353,8 @@ namespace Orders
         /// <returns>Customer details</returns>
         public static List<customer> GetCustomerDetails(long googleOrderNumber)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<customer> customerDetails = (from c in db.customers
                                               where c.google_order_number == googleOrderNumber
                                               select c).ToList<customer>();
@@ -346,8 +367,9 @@ namespace Orders
         /// <param name="orderNumber">The order number.</param>
         public static void ArchiveOrder(string orderNumber)
         {
+            string conn = GetConnectionString();
             long googleOrderNumber = Int64.Parse(orderNumber);
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             order archiveOrder = (from or in db.orders
                                         where or.google_order_number == googleOrderNumber
                                         select or).Single<order>();
@@ -357,8 +379,9 @@ namespace Orders
 
         public static void UnarchiveOrder(string orderNumber)
         {
+            string conn = GetConnectionString();
             long googleOrderNumber = Int64.Parse(orderNumber);
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             order unarchiveOrder = (from or in db.orders
                                   where or.google_order_number == googleOrderNumber
                                   select or).Single<order>();
@@ -372,7 +395,8 @@ namespace Orders
         /// <param name="orderId">The order id.</param>
         public static void DeleteOrder(int orderId)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             order deleteOrder = db.orders.Where(o => o.order_id == orderId).Single<order>();
             db.orders.DeleteOnSubmit(deleteOrder);
             db.SubmitChanges();
@@ -384,7 +408,8 @@ namespace Orders
         /// <returns>List of all customers</returns>
         public static List<customer> GetAllCustomers()
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<customer> list = db.customers.ToList<customer>();
             return list;
         }
@@ -395,7 +420,8 @@ namespace Orders
         /// <returns>List of all ordered items</returns>
         public static List<order_item> GetAllOrderItems()
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order_item> list = db.order_items.ToList<order_item>();
             return list;
         }
@@ -406,7 +432,8 @@ namespace Orders
         /// <returns>List of all orders</returns>
         public static List<order> GetALL()
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> list = db.orders.ToList<order>();
             return list;
         }
@@ -418,7 +445,8 @@ namespace Orders
         /// <returns>List of orders for given user</returns>
         public static List<order> GetOrdersByUser(string username)
         {
-            StoreDataClassesDataContext db = new StoreDataClassesDataContext("Data Source=mssql401.ixwebhosting.com;Initial Catalog=karolin_ecommerce;uid=karolin_ecomm;password=ke6grty");
+            string conn = GetConnectionString();
+            StoreDataClassesDataContext db = new StoreDataClassesDataContext(conn);
             List<order> list = db.orders.Where(o => o.order_by == username && o.status != "TEMP").ToList<order>();
             return list;
         }
